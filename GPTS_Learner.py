@@ -8,7 +8,7 @@ class GPTS_Learner(Learner):
     def __init__(self, n_arms, arms):
         super().__init__(n_arms)
         self.arms = arms
-        self.means = np.zeros(self.n_arms)
+        self.means = np.ones(self.n_arms)*10
         self.sigmas = np.ones(self.n_arms)*10
         self.pulled_arms = []
         alpha = 10.0
@@ -32,6 +32,11 @@ class GPTS_Learner(Learner):
         self.update_model()
 
     def pull_arm(self):
-        sampled_values = np.random.normal(self.means, self.sigmas)
+        sampled_values = self.sample_values()
         return np.argmax(sampled_values)
 
+    def sample_values(self):
+        return np.random.normal(self.means, self.sigmas)
+
+    def convert_value_to_arm(self, value):
+        return np.where(self.arms == value)

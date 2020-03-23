@@ -21,7 +21,7 @@ ax.plot(t, s1, "r")
 ax.plot(t, s2, "g")
 ax.plot(t, s3, "b")
 plt.legend(["Northern Italy with childrens", "Northern Italy without childrens", "Southern Italy with childrens"])
-ax.set(xlabel='% of budget allocated to subcampaign', ylabel='number of clicks',
+ax.set(xlabel='Budget allocated to subcampaign in k€', ylabel='number of clicks',
        title='Probability over daily clicks - Autumn')
 ax.grid()
 plt.savefig('curves/daily_clicks_fall.png')
@@ -32,7 +32,7 @@ ax2.plot(t, w1, "r")
 ax2.plot(t, w2, "g")
 ax2.plot(t, w3, "b")
 plt.legend(["Northern Italy with childrens", "Northern Italy without childrens", "Southern Italy with childrens"])
-ax2.set(xlabel='% of budget allocated to subcampaign', ylabel='number of clicks',
+ax2.set(xlabel='Budget allocated to subcampaign in k€', ylabel='number of clicks',
        title='Probability over daily clicks - Christmas time')
 ax2.grid()
 plt.savefig('curves/daily_clicks_xmas.png')
@@ -43,7 +43,7 @@ ax3.plot(t, pr1, "r")
 ax3.plot(t, pr2, "g")
 ax3.plot(t, pr3, "b")
 plt.legend(["Northern Italy with childrens", "Northern Italy without childrens", "Southern Italy with childrens"])
-ax3.set(xlabel='% of budget allocated to subcampaign', ylabel='number of clicks',
+ax3.set(xlabel='Budget allocated to subcampaign in k€', ylabel='number of clicks',
        title='Probability over daily clicks - Spring')
 ax3.grid()
 plt.savefig('curves/daily_clicks_spring.png')
