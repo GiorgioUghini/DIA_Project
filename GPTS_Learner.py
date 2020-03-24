@@ -8,12 +8,11 @@ class GPTS_Learner(Learner):
     def __init__(self, n_arms, arms):
         super().__init__(n_arms)
         self.arms = arms
-        self.means = np.ones(self.n_arms)*10
+        self.means = np.zeros(self.n_arms)
         self.sigmas = np.ones(self.n_arms)*10
         self.pulled_arms = []
-        alpha = 10.0
-        kernel = C(1.0, (1e-3, 1e3)) * RBF(1.0, (1e-3, 1e3))
-        self.gp = GaussianProcessRegressor(kernel=kernel, alpha=alpha**2, normalize_y=True, n_restarts_optimizer=9)
+        kernel = C(1.0, (1e-6, 1e6)) * RBF(1, (1e-6, 1e6))
+        self.gp = GaussianProcessRegressor(kernel=kernel, normalize_y=True, n_restarts_optimizer=10)
 
     def update_observations(self, arm_idx, reward):
         super().update_observations(arm_idx, reward)
@@ -40,3 +39,22 @@ class GPTS_Learner(Learner):
 
     def convert_value_to_arm(self, value):
         return np.where(self.arms == value)
+
+    '''
+    Use this function if you want to plot the current status of the prediction
+    just call the correct learner for a certain usertype and edit the correct function below.
+    
+    def plotFn(self):
+        correct = 12000 * (1 - np.exp((-1*self.arms)/70)) + 1000 * np.log(self.arms+1)
+        plt.figure(self.t)
+        plt.plot(self.arms, correct, 'r:', 'real fn')
+        plt.plot(self.pulled_arms, self.collected_rewards.ravel(), 'ro', 'observations')
+        plt.plot(self.arms, self.means, 'b-', 'predicted')
+        plt.fill(np.concatenate([self.arms, self.arms[::-1]]),
+                 np.concatenate([self.means - 1.9600 * self.sigmas,
+                                 (self.means + 1.9600 * self.sigmas)[::-1]]),
+                 alpha=.5, fc='b', ec='None', label='95% confidence interval')
+        plt.legend(loc='lower right')
+        plt.show()
+    '''
+

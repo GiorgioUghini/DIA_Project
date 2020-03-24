@@ -4,7 +4,7 @@ import numpy as np
 def fun(x, userType):
     if (userType == 0):
         return 10500 * (1 - np.exp((-1*x)/40))
-    elif (userType == 2):
+    elif (userType == 1):
         return 12000 * (1 - np.exp((-1*x)/70)) + 1000 * np.log(x+1)
     else:
         return 3500 * (1 - np.exp((-1*x)/10))

@@ -4,19 +4,19 @@ from CMABEnvironment import *
 from CMABOptimizer import *
 from GPTS_Learner import *
 
-step = 5
-min_budgets = [5, 10, 15]
-max_budgets = [40, 35, 45]
+step = 2
+min_budgets = [0, 0, 0]
+max_budgets = [34, 38, 36]
 total_budget = 75
 budgets_j = [np.arange(min_budgets[0], max_budgets[0] + 1, step), np.arange(min_budgets[1], max_budgets[1] + 1, step), np.arange(min_budgets[2], max_budgets[2] + 1, step)]      # +1 to max_budget because range does not include the right extreme of the interval by default
 n_arms = [len(budgets_j[0]), len(budgets_j[1]), len(budgets_j[2])]
-sigma = 10
-T = 400
+sigma = 100
+T = 120
 J = 3
-n_experiments = 3
+n_experiments = 30
 per_experiment_rewards_gpts = [[] for i in range(0, J)]
 
-#   This script, configured with n_experiments = 75, T = 200, and 6-7 arms for each userType
+#   This script, configured with n_experiments = 30, T = 120, and ~19 arms for each userType
 #   runs, in a i7-7000 machine with 16Gb of RAM in approximately 1 hour and a half
 
 for e in range(0, n_experiments):
