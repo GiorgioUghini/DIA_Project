@@ -4,7 +4,7 @@ from AllocationEnvironment import *
 from GPTS_Learner import *
 
 
-n_arms = 20
+n_arms = 21
 min_budget = 0.0
 max_budget = 1.0
 budgets = np.linspace(min_budget, max_budget, n_arms)

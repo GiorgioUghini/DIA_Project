@@ -45,7 +45,7 @@ class GPTS_Learner(Learner):
     just call the correct learner for a certain usertype and edit the correct function below.
     
     def plotFn(self):
-        correct = 12000 * (1 - np.exp((-1*self.arms)/70)) + 1000 * np.log(self.arms+1)
+        correct = 3500 * (1 - np.exp((-1*self.arms)/10))
         plt.figure(self.t)
         plt.plot(self.arms, correct, 'r:', 'real fn')
         plt.plot(self.pulled_arms, self.collected_rewards.ravel(), 'ro', 'observations')
@@ -57,4 +57,3 @@ class GPTS_Learner(Learner):
         plt.legend(loc='lower right')
         plt.show()
     '''
-
