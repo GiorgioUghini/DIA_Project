@@ -11,9 +11,9 @@ total_budget = 75
 budgets_j = [np.arange(min_budgets[0], max_budgets[0] + 1, step), np.arange(min_budgets[1], max_budgets[1] + 1, step), np.arange(min_budgets[2], max_budgets[2] + 1, step)]      # +1 to max_budget because range does not include the right extreme of the interval by default
 n_arms = [len(budgets_j[0]), len(budgets_j[1]), len(budgets_j[2])]
 sigma = 100
-T = 120
+T = 10
 J = 3
-n_experiments = 30
+n_experiments = 1
 per_experiment_rewards_gpts = [[] for i in range(0, J)]
 
 #   This script, configured with n_experiments = 30, T = 120, and ~19 arms for each userType
@@ -21,7 +21,7 @@ per_experiment_rewards_gpts = [[] for i in range(0, J)]
 
 for e in range(0, n_experiments):
     opt = CMABOptimizer(max_budget=total_budget, campaign_number=J, step=step)
-    envs = [CMABEnvironment(budgets=budgets_j[0], sigma=sigma, userType=0), CMABEnvironment(budgets=budgets_j[1], sigma=sigma, userType=1), CMABEnvironment(budgets=budgets_j[2], sigma=sigma, userType=2)]
+    env = CMABEnvironment(budgets_list=budgets_j, sigma=sigma)
     gpts_learners = [GPTS_Learner(n_arms=n_arms[0], arms=budgets_j[0]), GPTS_Learner(n_arms=n_arms[1], arms=budgets_j[1]), GPTS_Learner(n_arms=n_arms[2], arms=budgets_j[2])]
 
     for t in range(0, T):
@@ -42,7 +42,7 @@ for e in range(0, n_experiments):
         for j in range(0, J):
             chosen_arm = gpts_learners[j].convert_value_to_arm(chosen_budget[j])
             chosen_arm = int(chosen_arm[0])
-            reward = envs[j].round(chosen_arm)
+            reward = env.round(chosen_arm, j)
             gpts_learners[j].update(chosen_arm, reward)
 
     # Append rewards for statistical purposes
@@ -51,7 +51,7 @@ for e in range(0, n_experiments):
 
 
 for j in range(0, J):
-    opt = np.max(envs[j].means)
+    opt = np.max(env.means[j])
     plt.figure(j)
     plt.ylabel("Regret")
     plt.xlabel("t")

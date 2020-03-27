@@ -1,6 +1,7 @@
 import numpy as np
 
 
+# The real function to estimate
 def fun(x, userType):
     if (userType == 0):
         return 10500 * (1 - np.exp((-1*x)/40))
@@ -11,10 +12,10 @@ def fun(x, userType):
 
 
 class CMABEnvironment():
-    def __init__(self, budgets, sigma, userType):
-        self.budgets = budgets
-        self.means = fun(budgets, userType)
-        self.sigmas = np.ones(len(budgets)) * sigma
+    def __init__(self, budgets_list, sigma):
+        self.budgets = budgets_list
+        self.means = [fun(budgets_list[userType], userType) for userType in range(0, len(budgets_list))]
+        self.sigmas = [np.ones(len(budgets_list[userType])) * sigma for userType in range(0, len(budgets_list))]
 
-    def round(self, pulled_arm):
-        return np.random.normal(self.means[pulled_arm], self.sigmas[pulled_arm])
+    def round(self, pulled_arm, userType):
+        return np.random.normal(self.means[userType][pulled_arm], self.sigmas[userType][pulled_arm])
