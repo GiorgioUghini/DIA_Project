@@ -15,7 +15,9 @@ class CMABEnvironment():
     def __init__(self, budgets_list, sigma):
         self.budgets = budgets_list
         self.means = [fun(budgets_list[userType], userType) for userType in range(0, len(budgets_list))]
-        self.sigmas = [np.ones(len(budgets_list[userType])) * sigma for userType in range(0, len(budgets_list))]
+        self.sigma = sigma
 
     def round(self, pulled_arm, userType):
-        return np.random.normal(self.means[userType][pulled_arm], self.sigmas[userType][pulled_arm])
+        means = self.means[userType][pulled_arm]
+        # We are supposing same variance among all userType:
+        return np.random.normal(means, np.ones(len(means)) * self.sigma)
