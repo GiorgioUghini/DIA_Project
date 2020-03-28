@@ -18,6 +18,6 @@ class CMABEnvironment():
         self.sigma = sigma
 
     def round(self, pulled_arm, userType):
-        means = self.means[userType][pulled_arm]
+        mean = self.means[userType][pulled_arm]
         # We are supposing same variance among all userType:
-        return np.random.normal(means, np.ones(len(means)) * self.sigma)
+        return np.random.normal(mean, self.sigma)

@@ -11,7 +11,7 @@ class GPTS_Learner(Learner):
         self.means = np.zeros(self.n_arms)
         self.sigmas = np.ones(self.n_arms)*10
         self.pulled_arms = []
-        kernel = C(1.0, (1e-6, 1e6)) * RBF(1, (1e-6, 1e6))
+        kernel = C(1.0, (1e-3, 1e3)) * RBF(1, (1e-3, 1e3))
         self.gp = GaussianProcessRegressor(kernel=kernel, normalize_y=True, n_restarts_optimizer=10)
 
     def update_observations(self, arm_idx, reward):
@@ -21,8 +21,8 @@ class GPTS_Learner(Learner):
     def update_model(self):
         x = np.atleast_2d(self.pulled_arms).T
         y = self.collected_rewards
-        self.gp.fit(x, y)
-        self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms).T, return_std=True)
+        self.gp.fit(x, y)   # Dati di ieri
+        self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms).T, return_std=True) # Fai previsione così scelgo il budget da allocare oggi
         self.sigmas = np.maximum(self.sigmas, 1e-2)
 
     def update(self, pulled_arm, reward):
@@ -35,7 +35,7 @@ class GPTS_Learner(Learner):
         return np.argmax(sampled_values)
 
     def sample_values(self):
-        return np.random.normal(self.means, self.sigmas)
+        return np.random.normal(self.means, self.sigmas)    # Mi ritorna un vettore [ 100, 200, 300, ... 1000 ]
 
     def convert_value_to_arm(self, value):
         return np.where(self.arms == value)

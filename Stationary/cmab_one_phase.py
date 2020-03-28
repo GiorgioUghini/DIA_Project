@@ -1,17 +1,17 @@
-import numpy as np
 import matplotlib.pyplot as plt
-from CMABEnvironment import *
+from Stationary.CMABEnvironment import *
 from CMABOptimizer import *
-from GPTS_Learner import *
+from Stationary.GPTS_Learner import *
 
 step = 2
 min_budgets = [0, 0, 0]
 max_budgets = [34, 38, 36]
 total_budget = 75
+# budgets_j = [ [0, 2, 4, ..., 34] , [0, 2, 4, ..., 38], [0, 2, 4, ..., 36] ]
 budgets_j = [np.arange(min_budgets[0], max_budgets[0] + 1, step), np.arange(min_budgets[1], max_budgets[1] + 1, step), np.arange(min_budgets[2], max_budgets[2] + 1, step)]      # +1 to max_budget because range does not include the right extreme of the interval by default
 n_arms = [len(budgets_j[0]), len(budgets_j[1]), len(budgets_j[2])]
 sigma = 100
-T = 10
+T = 20
 J = 3
 n_experiments = 1
 per_experiment_rewards_gpts = [[] for i in range(0, J)]
@@ -50,11 +50,28 @@ for e in range(0, n_experiments):
         per_experiment_rewards_gpts[j].append(gpts_learners[j].collected_rewards)
 
 
+# Compute the REAL optimum allocation by solving the optimization problem with the real values
+colNum = int(np.floor_divide(total_budget, step) + 1)
+base_matrix = np.ones((J, colNum)) * np.NINF
 for j in range(0, J):
-    opt = np.max(env.means[j])
-    plt.figure(j)
-    plt.ylabel("Regret")
-    plt.xlabel("t")
-    plt.plot(np.cumsum(np.mean(opt - per_experiment_rewards_gpts[j], axis=0)), 'r')
-    plt.legend(["UserType = " + str(j)])
-    plt.show()
+    real_values = env.means[j]
+    bubblesNum = int(min_budgets[j] / step)
+    indices_list = [i for i in range(bubblesNum + colNum * j, bubblesNum + colNum * j + len(real_values))]
+    np.put(base_matrix, indices_list, real_values)
+chosen_budget = opt.optimize(base_matrix)
+chosen_arms = [gpts_learners[j].convert_value_to_arm(chosen_budget[j])[0] for j in range(0, J)]
+optimized_alloc = [env.means[j][chosen_arms[j]] for j in range(0, J)]
+
+# Print aggregated results
+aggr_optimal_value = np.sum(optimized_alloc)
+aggr_rewards = np.sum(per_experiment_rewards_gpts, axis=0)
+plt.figure(0)
+plt.ylabel("Regret")
+plt.xlabel("t")
+a = aggr_optimal_value - aggr_rewards
+b = np.mean(a, axis=0)
+c = np.cumsum(b)
+plt.plot(c, 'r')
+plt.legend(["UserType = " + str(j)])
+plt.show()
+
