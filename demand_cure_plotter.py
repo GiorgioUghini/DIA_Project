@@ -16,4 +16,5 @@ plt.legend(["Northern Italy with childrens", "Northern Italy without childrens",
 ax.set(xlabel='price of the item [€]', ylabel='conversion rate [%]',
        title='Conversion rate curve')
 ax.grid()
+plt.savefig('curves/conversion_rate_curve.png')
 plt.show()
