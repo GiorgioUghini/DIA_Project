@@ -14,9 +14,9 @@ total_budget = 75
 budgets_j = [np.arange(min_budgets[0], max_budgets[0] + 1, step), np.arange(min_budgets[1], max_budgets[1] + 1, step), np.arange(min_budgets[2], max_budgets[2] + 1, step)]      # +1 to max_budget because range does not include the right extreme of the interval by default
 n_arms = [len(budgets_j[0]), len(budgets_j[1]), len(budgets_j[2])]
 sigma = 100
-T = 120  # T should be a multiple of env.N_PHASES or not all phases wil have same lenght
+T = 120  # T should be a multiple of env.N_PHASES or not all phases wil have same length
 J = 3
-n_experiments = 4
+n_experiments = 5
 per_experiment_rewards_gpts = [[] for i in range(0, J)]
 per_experiment_rewards_gpswts = [[] for j in range(0, J)]
 window_size = int(np.sqrt(T))
@@ -85,17 +85,21 @@ for p in range(0, env.N_PHASES):
     colNum = int(np.floor_divide(total_budget, step) + 1)
     base_matrix = np.ones((J, colNum)) * np.NINF
     for j in range(0, J):
-        real_values = env.means[j]
+        real_values = env.means[j*J + p]
         bubblesNum = int(min_budgets[j] / step)
         indices_list = [i for i in range(bubblesNum + colNum * j, bubblesNum + colNum * j + len(real_values))]
         np.put(base_matrix, indices_list, real_values)
-    chosen_budget = opt.optimize(base_matrix)
-    chosen_arms = [gpts_learners[j].convert_value_to_arm(chosen_budget[j])[0] for j in range(0, J)]
-    optimized_alloc = [env.means[j][chosen_arms[j]] for j in range(0, J)]
-    opt_per_phase.append(np.sum(optimized_alloc))
+    chosen_budget = opt.optimize(base_matrix)  # Optimal allocation in phase p
+    optimal_val = 0
+    for j in range(0, J):
+        optimal_val += fun(chosen_budget[j], j, p)
+    opt_per_phase.append(optimal_val)
 
 # Print aggregated results
-aggr_rewards = np.sum(per_experiment_rewards_gpts, axis=0)
+aggr_rewards_gpts = np.sum(per_experiment_rewards_gpts, axis=0)
+aggr_rewards_gpts = np.mean(aggr_rewards_gpts, axis=0)
+aggr_rewards_gpswts = np.sum(per_experiment_rewards_gpswts, axis=0)
+aggr_rewards_gpswts = np.mean(aggr_rewards_gpswts, axis=0)
 plt.figure(0)
 plt.ylabel("Regret")
 plt.xlabel("t")
@@ -105,9 +109,8 @@ for t in range(0, T):
     phase_size = T / env.N_PHASES
     current_phase = int(t / phase_size)
     optimal_vector.append(opt_per_phase[current_phase])
-a = optimal_vector - aggr_rewards
 
-c = np.cumsum(np.mean(a, axis=0))
-plt.plot(c, 'r')
+plt.plot(np.cumsum(optimal_vector - aggr_rewards_gpts), 'r')
+plt.plot(np.cumsum(optimal_vector - aggr_rewards_gpswts), 'b')
 plt.legend(["UserType = "])
 plt.show()

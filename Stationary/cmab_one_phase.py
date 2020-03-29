@@ -11,9 +11,9 @@ total_budget = 75
 budgets_j = [np.arange(min_budgets[0], max_budgets[0] + 1, step), np.arange(min_budgets[1], max_budgets[1] + 1, step), np.arange(min_budgets[2], max_budgets[2] + 1, step)]      # +1 to max_budget because range does not include the right extreme of the interval by default
 n_arms = [len(budgets_j[0]), len(budgets_j[1]), len(budgets_j[2])]
 sigma = 100
-T = 20
+T = 100
 J = 3
-n_experiments = 1
+n_experiments = 5
 per_experiment_rewards_gpts = [[] for i in range(0, J)]
 
 #   This script, configured with n_experiments = 30, T = 120, and ~19 arms for each userType
