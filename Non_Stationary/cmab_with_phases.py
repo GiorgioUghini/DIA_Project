@@ -16,11 +16,10 @@ n_arms = [len(budgets_j[0]), len(budgets_j[1]), len(budgets_j[2])]
 sigma = 100
 T = 300  # T should be a multiple of env.N_PHASES or not all phases wil have same length
 J = 3
-n_experiments = 10
+n_experiments = 25
 per_experiment_rewards_gpts = [[] for i in range(0, J)]
 per_experiment_rewards_gpswts = [[] for j in range(0, J)]
 window_size = 97  #  4 * sqrt(N log(N)) with only one phase
-
 
 for e in range(0, n_experiments):
     opt = CMABOptimizer(max_budget=total_budget, campaign_number=J, step=step)

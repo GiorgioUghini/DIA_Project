@@ -1,28 +1,28 @@
 import numpy as np
 
 
-def fun(x, userType, phase):
+def fun(t, userType, phase):
     if (userType == 0):
         if (phase == 0):
-            return 10500 * (1 - np.exp((-1*x)/40))
+            return -15000 * np.exp(-np.power(t - 0, 2.) / (2 * np.power(50, 2.))) + 15000
         elif (phase == 1):
-            return 28000 * (1 - np.exp((-1 * x) / 85))
+            return 23000 * (1 - np.exp((-1*t)/85))
         else:
-            return 900 * np.log(x / 27 + 1)
+            return 900 * np.log(t/27+1)
     elif (userType == 1):
         if (phase == 0):
-            return 12000 * (1 - np.exp((-1 * x) / 70)) + 1000 * np.log(x + 1)
+            return 12000 * (1 - np.exp((-1*t)/70)) + 1000 * np.log(t+1) + 1000*np.exp(-np.power(t - 10, 2.) / (2 * np.power(5, 2.)))
         elif (phase == 1):
-            return 22000 * (1 - np.exp((-1 * x) / 40))
+            return -20000 * np.exp(-np.power(t - 0, 2.) / (2 * np.power(50, 2.))) + 20000
         else:
-            return 1100 * np.log(x / 20 + 1)
+            return 1100 * np.log(t / 20 + 1)
     else:
         if (phase == 0):
-            return 3500 * (1 - np.exp((-1 * x) / 10))
+            return 3500 * (1 - np.exp((-1*t)/10))
         elif (phase == 1):
-            return 13500 * (1 - np.exp((-1 * x) / 20))
+            return 11500 * (1 - np.exp((-1*t)/20)) + 13*t * np.sin(t)
         else:
-            return 700 * (1 - np.exp((-1 * x) / 40)) + 200 * np.log(x / 35 + 1)
+            return 700 * (1 - np.exp((-1 * t) / 40)) + 200 * np.log(t / 35 + 1)
 
 
 class NSCMABEnvironment():

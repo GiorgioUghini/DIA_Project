@@ -4,13 +4,13 @@ import numpy as np
 # Data for plotting
 t = np.arange(0.0, 100.0, 0.1)
 #Fall
-s1 = 10500 * (1 - np.exp((-1*t)/40))
-s2 = 12000 * (1 - np.exp((-1*t)/70)) + 1000 * np.log(t+1)
+s1 = -15000 * np.exp(-np.power(t - 0, 2.) / (2 * np.power(50, 2.))) + 15000
+s2 = 12000 * (1 - np.exp((-1*t)/70)) + 1000 * np.log(t+1) + 1000*np.exp(-np.power(t - 10, 2.) / (2 * np.power(5, 2.)))
 s3 = 3500 * (1 - np.exp((-1*t)/10))
 #Christmas
-w1 = 28000 * (1 - np.exp((-1*t)/85))
-w2 = 22000 * (1 - np.exp((-1*t)/40))
-w3 = 13500 * (1 - np.exp((-1*t)/20))
+w1 = 23000 * (1 - np.exp((-1*t)/85))
+w2 = -20000 * np.exp(-np.power(t - 0, 2.) / (2 * np.power(50, 2.))) + 20000
+w3 = 11500 * (1 - np.exp((-1*t)/20)) + 13*t * np.sin(t)
 #Spring
 pr1 = 900 * np.log(t/27+1)
 pr2 = 1100 * np.log(t/20+1)

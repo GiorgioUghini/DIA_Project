@@ -3,7 +3,7 @@ import numpy as np
 
 # Data for plotting
 t = np.arange(90., 450., 0.1)
-#Fall
+
 s1 = 0.75*np.exp(-np.power(t - 200, 2.) / (2 * np.power(90, 2.))) + 0.3*np.exp(-np.power(t - 60, 2.) / (2 * np.power(60, 2.)))
 s2 = 0.75*np.exp(-np.power(t - 250, 2.) / (2 * np.power(90, 2.))) + 0.55*np.exp(-np.power(t - 65, 2.) / (2 * np.power(90, 2.)))
 s3 = 0.42*np.exp(-np.power(t - 180, 2.) / (2 * np.power(90, 2.))) + 0.35*np.exp(-np.power(t - 85, 2.) / (2 * np.power(120, 2.)))
