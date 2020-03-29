@@ -9,17 +9,17 @@ from Non_Stationary.GPSWTS_Learner import *
 # Assumption: Static min/max budget allocation for all three phases
 step = 2
 min_budgets = [0, 0, 0]
-max_budgets = [34, 38, 36]
-total_budget = 75
+max_budgets = [80, 80, 20]
+total_budget = 100
 budgets_j = [np.arange(min_budgets[0], max_budgets[0] + 1, step), np.arange(min_budgets[1], max_budgets[1] + 1, step), np.arange(min_budgets[2], max_budgets[2] + 1, step)]      # +1 to max_budget because range does not include the right extreme of the interval by default
 n_arms = [len(budgets_j[0]), len(budgets_j[1]), len(budgets_j[2])]
 sigma = 100
-T = 120  # T should be a multiple of env.N_PHASES or not all phases wil have same length
+T = 300  # T should be a multiple of env.N_PHASES or not all phases wil have same length
 J = 3
-n_experiments = 5
+n_experiments = 10
 per_experiment_rewards_gpts = [[] for i in range(0, J)]
 per_experiment_rewards_gpswts = [[] for j in range(0, J)]
-window_size = int(np.sqrt(T))
+window_size = 50
 
 
 for e in range(0, n_experiments):
@@ -112,5 +112,15 @@ for t in range(0, T):
 
 plt.plot(np.cumsum(optimal_vector - aggr_rewards_gpts), 'r')
 plt.plot(np.cumsum(optimal_vector - aggr_rewards_gpswts), 'b')
-plt.legend(["UserType = "])
+plt.legend(["GPTS", "GPSWTS"])
+plt.show()
+
+plt.figure(1)
+plt.ylabel("Clicks")
+plt.xlabel("t")
+
+plt.plot(aggr_rewards_gpts, 'r')
+plt.plot(aggr_rewards_gpswts, 'b')
+plt.plot(optimal_vector, 'k--')
+plt.legend(["GPTS", "GPSWTS", "Optimal"])
 plt.show()
