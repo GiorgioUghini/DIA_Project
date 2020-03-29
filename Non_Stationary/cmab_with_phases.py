@@ -19,7 +19,7 @@ J = 3
 n_experiments = 10
 per_experiment_rewards_gpts = [[] for i in range(0, J)]
 per_experiment_rewards_gpswts = [[] for j in range(0, J)]
-window_size = 50
+window_size = 97  #  4 * sqrt(N log(N)) with only one phase
 
 
 for e in range(0, n_experiments):
