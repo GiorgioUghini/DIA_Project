@@ -1,14 +1,10 @@
 import numpy as np
+import utils
 
 
 # The real function to estimate
-def fun(x, userType):
-    if (userType == 0):
-        return 10500 * (1 - np.exp((-1*x)/40))
-    elif (userType == 1):
-        return 12000 * (1 - np.exp((-1*x)/70)) + 1000 * np.log(x+1)
-    else:
-        return 3500 * (1 - np.exp((-1*x)/10))
+def fun(t, userType):
+    return utils.getClickCurve(3, userType, t)  # Only the last phase, the one in high interest and with competitors
 
 
 class CMABEnvironment():
