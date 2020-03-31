@@ -9,8 +9,8 @@ from Non_Stationary.GPSWTS_Learner import *
 # Assumption: Static min/max budget allocation for all three phases
 step = 2
 min_budgets = [0, 0, 0]
-max_budgets = [80, 80, 20]
-total_budget = 100
+max_budgets = [70, 80, 40]
+total_budget = 80
 budgets_j = [np.arange(min_budgets[0], max_budgets[0] + 1, step), np.arange(min_budgets[1], max_budgets[1] + 1, step), np.arange(min_budgets[2], max_budgets[2] + 1, step)]      # +1 to max_budget because range does not include the right extreme of the interval by default
 n_arms = [len(budgets_j[0]), len(budgets_j[1]), len(budgets_j[2])]
 sigma = 100
@@ -19,7 +19,7 @@ J = 3
 n_experiments = 30
 per_experiment_rewards_gpts = [[] for i in range(0, J)]
 per_experiment_rewards_gpswts = [[] for j in range(0, J)]
-window_size = 97  #  4 * sqrt(N log(N)) with only one phase
+window_size = 129  #  4 * sqrt(N log(N)) with only one phase
 
 for e in range(0, n_experiments):
     opt = CMABOptimizer(max_budget=total_budget, campaign_number=J, step=step)
@@ -84,7 +84,7 @@ for p in range(0, env.N_PHASES):
     colNum = int(np.floor_divide(total_budget, step) + 1)
     base_matrix = np.ones((J, colNum)) * np.NINF
     for j in range(0, J):
-        real_values = env.means[j*J + p]
+        real_values = env.means[j*env.N_PHASES + p]
         bubblesNum = int(min_budgets[j] / step)
         indices_list = [i for i in range(bubblesNum + colNum * j, bubblesNum + colNum * j + len(real_values))]
         np.put(base_matrix, indices_list, real_values)
