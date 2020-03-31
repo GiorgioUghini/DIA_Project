@@ -13,6 +13,7 @@ Sciarpa stile Louis Vuitton ~ 200€
 3) Appariscenza, particolarità e unicità del prodotto
 
 ## Fasi
-- È autunno (La domanda del nord Italia è media mentre quella del sud è bassa
-- Periodo natalizio (la domanda è alta per tutti in quanto è una cosa prestigiosa e ci sta regalarla)
-- È primavera (la domanda è molto bassa per tutti)
+- GEN-FEB-MAR: Alto interesse, No competitor
+- APR-MAG-GIU: Basso interesse, No competitor
+- LUG-AGO-SET: Basso interesse, Si inserisce un competitor per la prossima fase
+- OTT-NOV-DIC: Alto interesse, Con competitor
