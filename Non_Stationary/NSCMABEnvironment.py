@@ -1,33 +1,14 @@
 import numpy as np
+import utils
 
 
 def fun(t, userType, phase):
-    if (userType == 0):
-        if (phase == 0):
-            return -16500 * np.exp(-np.power(t - 0, 2.) / (2 * np.power(50, 2.))) + 16500
-        elif (phase == 1):
-            return 8200 * (1 - np.exp((-1*t)/85))
-        else:
-            return 5500 * np.log(t/27+1)
-    elif (userType == 1):
-        if (phase == 0):
-            return 14500 * (1 - np.exp((-1*t)/70)) + 1000 * np.log(t+1) + 1200*np.exp(-np.power(t - 10, 2.) / (2 * np.power(5, 2.)))
-        elif (phase == 1):
-            return -7500 * np.exp(-np.power(t - 0, 2.) / (2 * np.power(50, 2.))) + 7500
-        else:
-            return 6500 * np.log(t/20+1)
-    else:
-        if (phase == 0):
-            return 5500 * (1 - np.exp((-1*t)/10))
-        elif (phase == 1):
-            return 4500 * (1 - np.exp((-1*t)/20)) - 1500*np.exp(-np.power(t - 80, 2.) / (2 * np.power(40, 2.))) + 200
-        else:
-            return 4500 * (1 - np.exp((-1*t)/40)) + 1500 * np.log(t/35+1)
+    return utils.getClickCurve(phase, userType, t)  # phase and userType are inverted, it's correct
 
 
 class NSCMABEnvironment():
     def __init__(self, budgets_list, sigma, horizon):
-        self.N_PHASES = 3
+        self.N_PHASES = 4
         # We hardcode N_PHASES and all the functions here because it would compromise the main code
         # to pass all these as parameters. However, it can be easily done, making the code more
         # reusable but less readable
