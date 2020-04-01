@@ -41,5 +41,7 @@ def getDemandCurve(userType, t):
         return 0.75*np.exp(-np.power(t - 200, 2.) / (2 * np.power(90, 2.))) + 0.3*np.exp(-np.power(t - 60, 2.) / (2 * np.power(60, 2.)))
     elif (userType == 1):
         return 0.75*np.exp(-np.power(t - 250, 2.) / (2 * np.power(90, 2.))) + 0.55*np.exp(-np.power(t - 65, 2.) / (2 * np.power(90, 2.)))
-    else:
+    elif  (userType == 2):
         return 0.42*np.exp(-np.power(t - 180, 2.) / (2 * np.power(90, 2.))) + 0.35*np.exp(-np.power(t - 85, 2.) / (2 * np.power(120, 2.)))
+    else:
+        return (0.75*np.exp(-np.power(t - 200, 2.) / (2 * np.power(90, 2.))) + 0.3*np.exp(-np.power(t - 60, 2.) / (2 * np.power(60, 2.))) + 0.75*np.exp(-np.power(t - 250, 2.) / (2 * np.power(90, 2.))) + 0.55*np.exp(-np.power(t - 65, 2.) / (2 * np.power(90, 2.))) + 0.42*np.exp(-np.power(t - 180, 2.) / (2 * np.power(90, 2.))) + 0.35*np.exp(-np.power(t - 85, 2.) / (2 * np.power(120, 2.)))) / 3
