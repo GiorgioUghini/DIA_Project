@@ -11,7 +11,7 @@ def demand(x):
 
 
 B = 300  # budget
-var = 4  # variance (where do I take this from?)
+var = 9  # variance (where do I take this from?)
 T = 300  # number of days
 
 clicks = np.round(np.random.normal(B, var, T))  # num of users who clicked the ads on each day
@@ -30,13 +30,13 @@ n_arms_arr.append((12, 'k--'))  # 25€ steps
 
 np_arms_arr = np.array(n_arms_arr)
 
-n_experiments = 10
+n_experiments = 1000
 ts_rewards_per_experiment = []
 legend = []
 
 for (n_arms, c) in n_arms_arr:
     print("N ARMS: %d" % n_arms)
-    env = Environment(n_arms=n_arms, demandCurve=demand, minPrice=100, maxPrice=400)
+    env = Environment(n_arms=n_arms, demandCurve=demand, minPrice=100, maxPrice=300)
     all_regrets = []
     for e in range(0, n_experiments):
         ts_learner = TS_Learner(n_arms=n_arms)
