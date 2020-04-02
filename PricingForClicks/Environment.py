@@ -9,14 +9,14 @@ class Environment:
         step = (maxPrice - minPrice) / (n_arms-1)
         x = minPrice
         while x <= maxPrice:
-            self.probabilities.append(demandCurve(x))
+            self.probabilities.append((x, demandCurve(x)))
             x += step
 
         if len(self.probabilities) < n_arms:
-            self.probabilities.append(demandCurve(maxPrice))
+            self.probabilities.append(maxPrice, demandCurve(maxPrice))
 
-    def round(self, pulled_arm):
-        reward = np.random.binomial(1, self.probabilities[pulled_arm])
-        return reward
+    def round(self, pulled_arm, clicks):
+        rewards = np.random.binomial(clicks, self.probabilities[pulled_arm][1])
+        return rewards
 
 
