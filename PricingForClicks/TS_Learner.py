@@ -11,7 +11,5 @@ class TS_Learner(Learner):
         return idx
 
     def update(self, pulled_arm, successes, failures):
-        self.t += 1
-        self.update_observations(pulled_arm, successes)
         self.beta_parameters[pulled_arm, 0] = self.beta_parameters[pulled_arm, 0] + successes
         self.beta_parameters[pulled_arm, 1] = self.beta_parameters[pulled_arm, 1] + failures

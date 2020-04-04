@@ -7,8 +7,8 @@ class Learner:
         self.rewards_per_arm = [[] for i in range(n_arms)]
         self.collected_rewards = np.array([])
 
-
     def pull_arm(self):
+        self.t += 1
         pass
 
     def update_observations(self, pulled_arm, reward):
