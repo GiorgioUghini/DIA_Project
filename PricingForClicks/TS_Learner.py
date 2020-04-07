@@ -10,12 +10,10 @@ class TS_Learner(Learner):
         self.arms = arms
 
     def pull_arm(self):
-        idx = np.argmax(np.random.beta(self.beta_parameters[:, 0], self.beta_parameters[:, 1]))
+        idx = np.argmax(np.random.beta(self.beta_parameters[:, 0], self.beta_parameters[:, 1]) * self.arms[:, 0])
         return idx
 
-    def update(self, pulled_arm, successes):
-        price = self.arms[pulled_arm, 0]
-        k = 1000000
-        reward = successes * price / k
+    def update(self, pulled_arm, successes, failures):
+        reward = successes / (successes + failures)
         self.beta_parameters[pulled_arm, 0] += reward
         self.beta_parameters[pulled_arm, 1] += 1-reward

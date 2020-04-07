@@ -19,12 +19,12 @@ class UCB1_Learner(Learner):
 
     def calc_upper_bound(self, params):
         (avg, n, price) = params
-        return avg + math.sqrt(2 * math.log10(self.t) / n)
+        return price * (avg + math.sqrt(2 * math.log10(self.t) / n))
 
-    def update(self, pulled_arm, successes):
+    def update(self, pulled_arm, successes, failures):
         (avg, n, p) = self.results_per_arm[pulled_arm]
-        normalized_reward = successes * p / 1e6
-        new_avg = (avg * n + normalized_reward) / (n+1)
+        reward = successes / (successes + failures)
+        new_avg = (avg * n + reward) / (n+1)
         self.results_per_arm[pulled_arm] = (new_avg, n + 1, p)
 
 

@@ -40,7 +40,8 @@ for e in range(0, n_experiments):
         # Thompson Sampling Learner
         pulled_arm = ts_learner.pull_arm()
         successes = ts_env.round(pulled_arm, clicks[t])
-        ts_learner.update(pulled_arm, successes)
+        failures = clicks[t] - successes
+        ts_learner.update(pulled_arm, successes, failures)
         best_hope = optimum[t]
         actual_value = successes*ts_env.probabilities[pulled_arm][0]
         regret = best_hope - actual_value
@@ -49,7 +50,8 @@ for e in range(0, n_experiments):
         # UCB1 Learner
         pulled_arm = ucb1_learner.pull_arm()
         successes = ucb1_env.round(pulled_arm, clicks[t])
-        ucb1_learner.update(pulled_arm, successes)
+        failures = clicks[t] - successes
+        ucb1_learner.update(pulled_arm, successes, failures)
         best_hope = optimum[t]
         actual_value = successes * ucb1_env.probabilities[pulled_arm, 0]
         regret = best_hope - actual_value
@@ -84,7 +86,7 @@ plt.figure(2)
 
 for i in range(n_arms):
     (avg, n, price) = ucb1_learner.results_per_arm[i]
-    sigma = ucb1_learner.calc_upper_bound((avg, n, price)) - avg
+    sigma = ucb1_learner.calc_upper_bound((avg, n, price)) / price - avg
     y = norm.pdf(x, avg, sigma)
     plt.plot(x, y)
 
