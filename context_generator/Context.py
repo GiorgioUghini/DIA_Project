@@ -18,7 +18,8 @@ class Context:
         scores = np.zeros(len(arms))
         for d in self.dem_ind_list:
             for i in range(len(arms)):
-                scores[i] += np.random.beta(cont_gen.beta_params[i][d][0], cont_gen.beta_params[i][d][1], size=1)[0] * class_probs[d]
+                scores[i] += np.random.beta(cont_gen.beta_params[i][d][0], cont_gen.beta_params[i][d][1], size=1)[0] * \
+                             class_probs[d]
         scores = scores * arms
         return np.argmax(scores)
 
@@ -37,15 +38,12 @@ class Context:
                      * arms[arm] * class_probs[j]
             cum_prob += class_probs[j]
             n_cum += cont_gen.n(arm, j)
+        # print(arm, n_cum)
         return score - np.sqrt(-np.log10(0.1) * 2 / (cum_prob * n_cum))
 
     def split(self, class_probs, cont_gen, arms):
         if len(self.dem_ind_list) <= 1:
-            raise SplitFailedEx
-        for i in range(len(arms)):
-            for dem in self.dem_ind_list:
-                if cont_gen.n(i, dem) == 0:
-                    raise SplitFailedEx
+            raise SplitFailedEx()
         for i in range(len(self.dem_ind_list)):
             spl1 = [self.dem_ind_list[i]]
             spl2 = copy.deepcopy(self.dem_ind_list)
@@ -60,4 +58,4 @@ class Context:
             l = self.get_arm_hoeffding_lowbound(class_probs, cont_gen, b, arms)
             if l1 + l2 > l:
                 return n1, n2
-        raise SplitFailedEx
+        raise SplitFailedEx()

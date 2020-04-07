@@ -47,6 +47,20 @@ def getProbabilities(userType):
         return 1
 
 
+def smoothen_curve(curve, smoothing_window_size=800):
+    smooth_curve = np.zeros(len(curve))
+    for i in range(len(curve)):
+        smooth_curve[i] = np.mean(curve[max(0, int(i - smoothing_window_size / 2)):
+                                                    min(len(curve), int(i + smoothing_window_size / 2))])
+    return smooth_curve
+
+
+def demand(y,x):
+    return getDemandCurve(y, x)  # aggregated fn
+
+
+
+
 def getDemandCurve(userType, t):
     if (userType == 0):
         return 0.75*np.exp(-np.power(t - 200, 2.) / (2 * np.power(90, 2.))) + 0.3*np.exp(-np.power(t - 60, 2.) / (2 * np.power(60, 2.)))
