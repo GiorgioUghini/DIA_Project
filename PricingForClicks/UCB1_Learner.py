@@ -22,11 +22,9 @@ class UCB1_Learner(Learner):
         return avg + math.sqrt(2 * math.log10(self.t) / n)
 
     def update(self, pulled_arm, successes):
-        k = 1000000
         (avg, n, p) = self.results_per_arm[pulled_arm]
-        reward = successes * p / k
-
-        new_avg = (avg * n + reward) / (n+1)
+        normalized_reward = successes * p / 1e6
+        new_avg = (avg * n + normalized_reward) / (n+1)
         self.results_per_arm[pulled_arm] = (new_avg, n + 1, p)
 
 
