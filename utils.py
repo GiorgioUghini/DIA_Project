@@ -47,27 +47,12 @@ def getProbabilities(userType):
         return 1
 
 
-def smoothen_curve(curve, smoothing_window_size=800):
-    smooth_curve = np.zeros(len(curve))
-    for i in range(len(curve)):
-        smooth_curve[i] = np.mean(curve[max(0, int(i - smoothing_window_size / 2)):
-                                                    min(len(curve), int(i + smoothing_window_size / 2))])
-    return smooth_curve
-
-
-def demand(y,x):
-    return getDemandCurve(y, x)  # aggregated fn
-
-
-
-
 def getDemandCurve(userType, t):
-    if (userType == 0):
-        return 0.75*np.exp(-np.power(t - 200, 2.) / (2 * np.power(90, 2.))) + 0.3*np.exp(-np.power(t - 60, 2.) / (2 * np.power(60, 2.)))
-    elif (userType == 1):
-        return 0.75*np.exp(-np.power(t - 250, 2.) / (2 * np.power(90, 2.))) + 0.55*np.exp(-np.power(t - 65, 2.) / (2 * np.power(90, 2.)))
-    elif  (userType == 2):
-        return 0.42*np.exp(-np.power(t - 180, 2.) / (2 * np.power(90, 2.))) + 0.35*np.exp(-np.power(t - 85, 2.) / (2 * np.power(120, 2.)))
+    if userType == 0:
+        return 0.75*np.exp(-np.power(t - 200, 2.) / (2*np.power(90, 2.))) + 0.3*np.exp(-np.power(t - 60, 2.) / (2*np.power(60, 2.)))
+    elif userType == 1:
+        return 0.75*np.exp(-np.power(t - 250, 2.) / (2*np.power(90, 2.))) + 0.55*np.exp(-np.power(t - 65, 2.) / (2*np.power(90, 2.)))
+    elif userType == 2:
+        return 0.42*np.exp(-np.power(t - 180, 2.) / (2*np.power(90, 2.))) + 0.35*np.exp(-np.power(t - 85, 2.) / (2*np.power(120, 2.)))
     else:
-        return getProbabilities(0)*getDemandCurve(0,t) + getProbabilities(1)*getDemandCurve(1,t) + getProbabilities(2)*getDemandCurve(2,t)
-        #return (0.75*np.exp(-np.power(t - 200, 2.) / (2 * np.power(90, 2.))) + 0.3*np.exp(-np.power(t - 60, 2.) / (2 * np.power(60, 2.))) + 0.75*np.exp(-np.power(t - 250, 2.) / (2 * np.power(90, 2.))) + 0.55*np.exp(-np.power(t - 65, 2.) / (2 * np.power(90, 2.))) + 0.42*np.exp(-np.power(t - 180, 2.) / (2 * np.power(90, 2.))) + 0.35*np.exp(-np.power(t - 85, 2.) / (2 * np.power(120, 2.)))) / 3
+        return getProbabilities(0)*getDemandCurve(0, t) + getProbabilities(1)*getDemandCurve(1, t) + getProbabilities(2)*getDemandCurve(2, t)
