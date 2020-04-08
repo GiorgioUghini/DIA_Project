@@ -72,6 +72,6 @@ a = aggr_optimal_value - aggr_rewards
 b = np.mean(a, axis=0)
 c = np.cumsum(b)
 plt.plot(c, 'r')
-plt.legend(["UserType = " + str(j)])
+plt.legend(["GPTS Learner"])
 plt.show()
 
