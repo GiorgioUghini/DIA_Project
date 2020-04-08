@@ -30,7 +30,7 @@ class MainEnvironment():
             while x <= pr_maxPrice[q]:
                 tmp_prb.append([x, demand(q, x)])
                 x += pr_step[q]
-            if len(self.pr_probabilities[q]) < pr_n_arms[q]:
+            if len(tmp_prb) < pr_n_arms[q]:
                 tmp_prb.append([pr_maxPrice[q], demand(q, pr_maxPrice)])
             self.pr_probabilities.append(np.array(tmp_prb))
 
@@ -39,6 +39,6 @@ class MainEnvironment():
         # We are supposing same variance among all userType:
         return np.random.normal(mean, self.sigma)
 
-    def round_pricing(self, pulled_arm, clicks):
-        rewards = np.random.binomial(clicks, self.pr_probabilities[pulled_arm][1])  # TODO: Usertype?
+    def round_pricing(self, pulled_arm, clicks, userType):
+        rewards = np.random.binomial(clicks, self.pr_probabilities[userType][pulled_arm][1])
         return rewards

@@ -6,7 +6,7 @@ from BudgetAllocationAndPricing.Main_Environment import *
 import math
 
 
-T = 5
+T = 300
 N_CLASSES = 3
 n_experiments = 1
 
@@ -29,7 +29,7 @@ for e in range(0, n_experiments):
     env = MainEnvironment(budgets_list=budgets_j, sigma=sigma, pr_n_arms=[pr_n_arms, pr_n_arms, pr_n_arms], pr_minPrice=[100,100,100], pr_maxPrice=[400,400,400])
     gpts_learners = [ GPTS_Learner(n_arms=bdg_n_arms[v], arms=budgets_j[v]) for v in range(0, N_CLASSES) ]
     pr_ts_learners = [ TS_Learner(arms=env.pr_probabilities[v]) for v in range(0, N_CLASSES) ]
-    clicks_yesterday = [ 2000, 2000, 2000 ]
+    clicks_yesterday = [ 2000, 2000, 2000 ] # clicks at T = 0
 
     for t in range(0, T):
         # Create matrix for the optimization process by sampling the GPTS
@@ -40,8 +40,10 @@ for e in range(0, n_experiments):
             ######  Pricing based on yesterday's clicks
             ####
             pulled_arm = pr_ts_learners[j].pull_arm()
-            successes = env.round_pricing(pulled_arm, clicks_yesterday[j])
-            actual_value = successes * env.pr_probabilities[pulled_arm][0]
+            successes = env.round_pricing(pulled_arm, clicks_yesterday[j], j)
+            failures = clicks_yesterday[j] - successes
+            pr_ts_learners[j].update(pulled_arm, successes, failures)
+            actual_value = successes * env.pr_probabilities[j][pulled_arm][0]
             ####
 
             sampled_values = actual_value * gpts_learners[j].sample_values()
