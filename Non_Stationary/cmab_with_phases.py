@@ -111,7 +111,7 @@ for t in range(0, T):
 
 plt.plot(np.cumsum(optimal_vector - aggr_rewards_gpts), 'r')
 plt.plot(np.cumsum(optimal_vector - aggr_rewards_gpswts), 'b')
-plt.legend(["GPTS", "GPSWTS"])
+plt.legend(["GPTS", "GP-SWTS"])
 plt.show()
 
 plt.figure(1)
@@ -121,5 +121,5 @@ plt.xlabel("t")
 plt.plot(aggr_rewards_gpts, 'r')
 plt.plot(aggr_rewards_gpswts, 'b')
 plt.plot(optimal_vector, 'k--')
-plt.legend(["GPTS", "GPSWTS", "Optimal"])
+plt.legend(["GPTS", "GP-SWTS", "Optimal"])
 plt.show()

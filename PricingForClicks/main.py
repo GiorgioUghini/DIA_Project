@@ -12,8 +12,8 @@ def demand(x):
     return utils.getDemandCurve(-1, x)  # aggregated fn
 
 
-B = 6000  # avg number of clicks per day
-var = 200  # variance in number of clicks per day
+B = 5000  # avg number of clicks per day
+var = 500  # variance in number of clicks per day
 T = 300  # number of days
 
 clicks = np.round(np.random.normal(B, var, T))  # num of users who clicked the ads on each day
