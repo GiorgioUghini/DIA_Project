@@ -17,3 +17,4 @@ class TS_Learner(Learner):
         reward = successes / (successes + failures)
         self.beta_parameters[pulled_arm, 0] += reward
         self.beta_parameters[pulled_arm, 1] += 1-reward
+        self.update_observations(pulled_arm, successes)
