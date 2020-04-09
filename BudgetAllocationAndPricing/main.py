@@ -23,7 +23,8 @@ budgets_j = [np.arange(min_budgets[x], max_budgets[x] + 1, step) for x in range(
 bdg_n_arms = [len(budgets_j[x]) for x in range(0, N_CLASSES)]
 per_experiment_revenues = []
 
-pr_n_arms = math.ceil((TIME_SPAN * np.log10(TIME_SPAN)) ** 0.25)  # the optimal number of arms
+#pr_n_arms = math.ceil((TIME_SPAN * np.log10(TIME_SPAN)) ** 0.25)  # the optimal number of arms
+pr_n_arms = 61
 best_prices = [optimize.fmin(lambda x: -utils.getDemandCurve(j, x) * x, TIME_SPAN / 2)[0]
                for j in range(0, N_CLASSES)]
 best_values_per_click = [utils.getDemandCurve(j, best_prices[j]) * best_prices[j]
@@ -39,6 +40,7 @@ for e in range(0, N_EXPERIMENTS):
                       for v in range(0, N_CLASSES) ]
     pr_ts_learners = [ TS_Learner(arms=env.pr_probabilities[v]) for v in range(0, N_CLASSES) ]
     experiment_revenues = []
+    print("Esperimento: " + str(e))
 
     for t in range(0, TIME_SPAN):
         # Create matrix for the optimization process by sampling the GPTS
@@ -105,7 +107,7 @@ plt.figure(1)
 plt.ylabel("Revenue")
 plt.xlabel("time")
 a = aggr_rewards
-b = np.cumsum(aggr_optimal_revenue)
+b = aggr_optimal_revenue * np.ones(len(aggr_rewards))
 plt.plot(a, 'b')
 plt.plot(b, 'k--')
 plt.legend(["Algorithm", "Optimal"])
