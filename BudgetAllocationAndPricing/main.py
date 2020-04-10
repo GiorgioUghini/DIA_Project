@@ -3,13 +3,13 @@ from CMABOptimizer import *
 from Stationary.GPTS_Learner import *
 from PricingForClicks.TS_Learner import *
 from BudgetAllocationAndPricing.Main_Environment import *
-import math
+import numpy as np
 from scipy import optimize
 
 
 TIME_SPAN = 364
 N_CLASSES = 3
-N_EXPERIMENTS = 50
+N_EXPERIMENTS = 1
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
@@ -60,7 +60,8 @@ for e in range(0, N_EXPERIMENTS):
             # Update model of the GPTS
             chosen_arm = gpts_learners[j].convert_value_to_arm(chosen_budget[j])
             chosen_arm = int(chosen_arm[0])
-            clicks = env.round_budget(chosen_arm, j)
+            clicks = np.round(env.round_budget(chosen_arm, j))
+            if clicks <= 0: clicks = 1
             gpts_learners[j].update(chosen_arm, clicks)
 
             # Pricing: problem can be decomposed. The optimal solution is the union
