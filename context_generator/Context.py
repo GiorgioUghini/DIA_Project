@@ -5,57 +5,60 @@ from context_generator.SplitFailedEx import *
 
 class Context:
     def __init__(self, demands_index_list):
-        self.dem_ind_list = demands_index_list
+        self.demands_index_list = demands_index_list
 
-    def get_clairvoyant(self, class_probs, arm_demand_means, arms):
+    def get_clairvoyant(self, probabilities_of_users, arms_demand_for_each_user, arms):
         scores = np.zeros(len(arms))
-        for i in range(arm_demand_means.shape[0]):
-            for j in self.dem_ind_list:
-                scores[i] += arm_demand_means[i][j] * arms[i] * class_probs[j]
+        for i in range(arms_demand_for_each_user.shape[0]):
+            for j in self.demands_index_list:
+                scores[i] += arms_demand_for_each_user[i][j] * arms[i] * probabilities_of_users[j]
+
         return np.max(scores)
 
-    def get_best_arm(self, class_probs, cont_gen, arms):
+    def get_best_arm(self, probabilities_of_users, context_generator, arms):
         scores = np.zeros(len(arms))
-        for d in self.dem_ind_list:
+        for d in self.demands_index_list:
             for i in range(len(arms)):
-                scores[i] += np.random.beta(cont_gen.beta_params[i][d][0], cont_gen.beta_params[i][d][1], size=1)[0] * \
-                             class_probs[d]
+                scores[i] += np.random.beta(context_generator.beta_params[i][d][0], context_generator.beta_params[i][d][1], size=1)[0] * probabilities_of_users[d]
+
         scores = scores * arms
         return np.argmax(scores)
 
-    def get_arm_reward(self, class_probs, cont_gen, arm, arms):
+    def get_arm_reward(self, probabilities_of_users, context_generator, arm, arms):
         score = 0
-        for j in self.dem_ind_list:
-            score += cont_gen.emp_mean(arm, j) * arms[arm] * class_probs[j]
+        for j in self.demands_index_list:
+            score += context_generator.emp_mean(arm, j) * arms[arm] * probabilities_of_users[j]
+
         return score
 
-    def get_arm_hoeffding_lowbound(self, class_probs, cont_gen, arm, arms):
+    def get_arm_hoeffding_lowbound(self, probabilities_of_users, context_generator, arm, arms):
         score = 0
         cum_prob = 0
         n_cum = 0
-        for j in self.dem_ind_list:
-            score += (cont_gen.emp_mean(arm, j)) \
-                     * arms[arm] * class_probs[j]
-            cum_prob += class_probs[j]
-            n_cum += cont_gen.n(arm, j)
-        # print(arm, n_cum)
+        for j in self.demands_index_list:
+            score += (context_generator.emp_mean(arm, j)) * arms[arm] * probabilities_of_users[j]
+            cum_prob += probabilities_of_users[j]
+            n_cum += context_generator.n(arm, j)
+        if n_cum == 0:
+            raise SplitFailedEx
+
         return score - np.sqrt(-np.log10(0.1) * 2 / (cum_prob * n_cum))
 
-    def split(self, class_probs, cont_gen, arms):
-        if len(self.dem_ind_list) <= 1:
+    def split(self, probabilities_of_users, context_generator, arms):
+        if len(self.demands_index_list) <= 1:
             raise SplitFailedEx()
-        for i in range(len(self.dem_ind_list)):
-            spl1 = [self.dem_ind_list[i]]
-            spl2 = copy.deepcopy(self.dem_ind_list)
-            spl2.pop(i)
-            n1 = Context(spl1)
-            n2 = Context(spl2)
-            b1 = n1.get_best_arm(class_probs, cont_gen, arms)
-            b2 = n2.get_best_arm(class_probs, cont_gen, arms)
-            b = self.get_best_arm(class_probs, cont_gen, arms)
-            l1 = n1.get_arm_hoeffding_lowbound(class_probs, cont_gen, b1, arms)
-            l2 = n2.get_arm_hoeffding_lowbound(class_probs, cont_gen, b2, arms)
-            l = self.get_arm_hoeffding_lowbound(class_probs, cont_gen, b, arms)
-            if l1 + l2 > l:
-                return n1, n2
+        for i in range(len(self.demands_index_list)):
+            one_feature = [self.demands_index_list[i]]
+            other_features = copy.deepcopy(self.demands_index_list)
+            other_features.pop(i)
+            c1 = Context(one_feature)
+            c2 = Context(other_features)
+            best_arm_1 = c1.get_best_arm(probabilities_of_users, context_generator, arms)
+            best_arm_2 = c2.get_best_arm(probabilities_of_users, context_generator, arms)
+            best_arm_this = self.get_best_arm(probabilities_of_users, context_generator, arms)
+            lower_bound_1 = c1.get_arm_hoeffding_lowbound(probabilities_of_users, context_generator, best_arm_1, arms)
+            lower_bound_2 = c2.get_arm_hoeffding_lowbound(probabilities_of_users, context_generator, best_arm_2, arms)
+            lower_bound_this = self.get_arm_hoeffding_lowbound(probabilities_of_users, context_generator, best_arm_this, arms)
+            if lower_bound_1 + lower_bound_2 > lower_bound_this:
+                return c1, c2
         raise SplitFailedEx()

@@ -4,62 +4,48 @@ from context_generator.SplitFailedEx import *
 
 class TSContextGenerator:
 
-    def __init__(self, class_probabilities, arm_demand_means, arms):
-        self.realizations_per_arm_per_demand = [[
-            [] for _ in range(len(class_probabilities))
-        ] for _ in range(len(arms))]
-        self.realizations_per_arm_per_demand_timestamps = [[
-            [] for _ in range(len(class_probabilities))
-        ] for _ in range(len(arms))]
-        self.beta_params = np.ones([len(arms), len(class_probabilities), 2], dtype=np.int64)
-        self.time_steps = 0
-        self.regrets = []
-        self.clairvoyants = []
-        self.rewards = []
+    def __init__(self, probabilities_of_users, arms_demand_for_each_user, arms):
+        self.probabilities_of_users = probabilities_of_users
+        self.arms_demand_for_each_user = arms_demand_for_each_user
         self.arms = arms
-        self.current_scale_factor = 1
-        self.class_probabilities = class_probabilities
-        self.arm_demand_means = arm_demand_means
-        self.nodes = [Context([i for i in range(len(class_probabilities))])]
+        self.realizations_per_arm_per_demand = [[
+            [] for _ in range(len(probabilities_of_users))
+        ] for _ in range(len(arms))]
+        self.beta_params = np.ones([len(arms), len(probabilities_of_users), 2], dtype=np.int64)
+        self.regrets = []
+        self.contexts = [Context([i for i in range(len(probabilities_of_users))])]
 
     def n(self, arm, demand):
-        val = len(self.realizations_per_arm_per_demand[arm][demand])
-        # print(arm, demand, val)
-        return val
+        return len(self.realizations_per_arm_per_demand[arm][demand])
 
-    def emp_mean(self, arm, dem):
-        return np.mean(self.realizations_per_arm_per_demand[arm][dem])
+    def emp_mean(self, arm, demand):
+        return np.mean(self.realizations_per_arm_per_demand[arm][demand])
 
     def calc_clair_rew_regret(self):
-        clair = 0
-        rew = 0
-        self.time_steps += 1
-        for i in range(len(self.nodes)):
-            node = self.nodes[i]
-            clair += node.get_clairvoyant(self.class_probabilities, self.arm_demand_means, self.arms)
-            bestarm = node.get_best_arm(self.class_probabilities, self, self.arms)
-            for dem in node.dem_ind_list:
-                sort = np.random.binomial(n=1, size=1, p=self.arm_demand_means[bestarm][dem] * self.current_scale_factor)[0]
-                self.realizations_per_arm_per_demand[bestarm][dem].append(sort)
-                self.realizations_per_arm_per_demand_timestamps[bestarm][dem].append(self.time_steps)
-                self.beta_params[bestarm][dem] += np.array([sort, 1 - sort])
+        clairvoyant = 0
+        reward = 0
+        for i in range(len(self.contexts)):
+            context = self.contexts[i]
+            clairvoyant += context.get_clairvoyant(self.probabilities_of_users, self.arms_demand_for_each_user, self.arms)
+            best_arm = context.get_best_arm(self.probabilities_of_users, self, self.arms)
 
-            # print(self.realizations_per_arm_per_demand)
+            for demand in context.demands_index_list:
+                sort = np.random.binomial(n=1, size=1, p=self.arms_demand_for_each_user[best_arm][demand])[0]
+                self.realizations_per_arm_per_demand[best_arm][demand].append(sort)
+                self.beta_params[best_arm][demand] += np.array([sort, 1 - sort])
 
-            rew += node.get_arm_reward(self.class_probabilities, self, bestarm, self.arms)
+            reward += context.get_arm_reward(self.probabilities_of_users, self, best_arm, self.arms)
 
-        rew = min(rew, clair)
-        self.clairvoyants.append(clair)
-        self.rewards.append(rew)
-        self.regrets.append(clair - rew)
+        reward = min(reward, clairvoyant)
+        self.regrets.append(clairvoyant - reward)
 
     def split(self):
-        for i in range(len(self.nodes)):
+        for i in range(len(self.contexts)):
             try:
-                n1, n2 = self.nodes[i].split(self.class_probabilities, self, self.arms)
-                self.nodes.pop(i)
-                self.nodes.append(n1)
-                self.nodes.append(n2)
+                c1, c2 = self.contexts[i].split(self.probabilities_of_users, self, self.arms)
+                self.contexts.pop(i)
+                self.contexts.append(c1)
+                self.contexts.append(c2)
                 break
             except SplitFailedEx:
                 continue
