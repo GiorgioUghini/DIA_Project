@@ -10,9 +10,9 @@ from datetime import datetime
 from scipy import optimize
 
 
-TIME_SPAN = 90
+TIME_SPAN = 75
 N_CLASSES = 3
-N_EXPERIMENTS = 50
+N_EXPERIMENTS = 1
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
@@ -26,7 +26,8 @@ budgets_j = [np.arange(min_budgets[x], max_budgets[x] + 1, step) for x in range(
 bdg_n_arms = [len(budgets_j[x]) for x in range(0, N_CLASSES)]
 per_experiment_revenues = []
 
-pr_n_arms = math.ceil((TIME_SPAN * np.log10(TIME_SPAN)) ** 0.25)  # the optimal number of arms
+#pr_n_arms = math.ceil((TIME_SPAN * np.log10(TIME_SPAN)) ** 0.25)  # the optimal number of arms
+pr_n_arms = 6  # Non cambiare, è per debug
 best_prices = [optimize.fmin(lambda x: -utils.getDemandCurve(j, x) * x, TIME_SPAN / 2)[0]
                for j in range(0, N_CLASSES)]
 best_values_per_click = [utils.getDemandCurve(j, best_prices[j]) * best_prices[j]
@@ -58,6 +59,7 @@ for e in range(0, N_EXPERIMENTS):
         chosen_budget = opt.optimize(base_matrix)
 
         aggregated_revenue = 0
+        debug = []
         for j in range(0, N_CLASSES):
             # Update model of the GPTS
             chosen_arm = gpts_learners[j].convert_value_to_arm(chosen_budget[j])
@@ -71,11 +73,13 @@ for e in range(0, N_EXPERIMENTS):
             successes = env.round_pricing(pulled_arm, clicks, j)    # Successful clicks with current budget
             failures = clicks - successes
             pr_ts_learners[j].update(pulled_arm, successes, failures)
+            debug.append((chosen_arm, pulled_arm, successes, failures))
+
             aggregated_revenue += successes * env.pr_probabilities[j][pulled_arm][0]    # For all classes
 
-            if t % 10 == 0 and j == 0:
-                gpts_learners[j].plotFn()
-
+        #RUSSO METTI IL BREAKPOINT QUI DENTRO e guarda il vettore debug per capire cosa è successo
+        if aggregated_revenue < 1.5e6:
+            print("ATTENTION, low revenue. Debug: " + str(debug))
         # Append the revenue of this day to the array for this experiment
         experiment_revenues.append(aggregated_revenue)
 

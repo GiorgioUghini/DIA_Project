@@ -18,6 +18,7 @@ class MainEnvironment():
         self.N_USERS = len(budgets_list)
         self.means = [fun(userType, budgets_list[userType]) for userType in range(0, self.N_USERS)]
         self.sigma = sigma
+
         ### Pricing Problem
         self.pr_n_arms = pr_n_arms  # array of arrays
         pr_step = []

@@ -13,7 +13,7 @@ def demand(x):
 
 
 B = 5000  # avg number of clicks per day
-var = 500  # variance in number of clicks per day
+var = 200  # variance in number of clicks per day
 T = 300  # number of days
 
 clicks = np.round(np.random.normal(B, var, T))  # num of users who clicked the ads on each day

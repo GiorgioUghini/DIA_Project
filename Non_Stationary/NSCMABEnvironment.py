@@ -28,7 +28,7 @@ class NSCMABEnvironment():
         # We are supposing same variance among all userTypes and phases.
         # If there are some phases with more uncertainty than others, just keep track
         # of it by instantiating self.sigma as a list based upon the current phase
-        return np.random.normal(mean, self.sigma)
+        return int(max(1.0, np.random.normal(mean, self.sigma)))
 
     def ahead(self):
         self.t += 1

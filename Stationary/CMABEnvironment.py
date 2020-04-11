@@ -16,4 +16,4 @@ class CMABEnvironment():
     def round(self, pulled_arm, userType):
         mean = self.means[userType][pulled_arm]
         # We are supposing same variance among all userType:
-        return np.random.normal(mean, self.sigma)
+        return int(max(1.0, np.random.normal(mean, self.sigma)))
