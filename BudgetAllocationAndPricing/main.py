@@ -4,12 +4,15 @@ from Stationary.GPTS_Learner import *
 from PricingForClicks.TS_Learner import *
 from BudgetAllocationAndPricing.Main_Environment import *
 import numpy as np
+import math
+import csv
+from datetime import datetime
 from scipy import optimize
 
 
-TIME_SPAN = 364
+TIME_SPAN = 180
 N_CLASSES = 3
-N_EXPERIMENTS = 1
+N_EXPERIMENTS = 50
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
@@ -23,8 +26,7 @@ budgets_j = [np.arange(min_budgets[x], max_budgets[x] + 1, step) for x in range(
 bdg_n_arms = [len(budgets_j[x]) for x in range(0, N_CLASSES)]
 per_experiment_revenues = []
 
-#pr_n_arms = math.ceil((TIME_SPAN * np.log10(TIME_SPAN)) ** 0.25)  # the optimal number of arms
-pr_n_arms = 61
+pr_n_arms = math.ceil((TIME_SPAN * np.log10(TIME_SPAN)) ** 0.25)  # the optimal number of arms
 best_prices = [optimize.fmin(lambda x: -utils.getDemandCurve(j, x) * x, TIME_SPAN / 2)[0]
                for j in range(0, N_CLASSES)]
 best_values_per_click = [utils.getDemandCurve(j, best_prices[j]) * best_prices[j]
@@ -61,7 +63,6 @@ for e in range(0, N_EXPERIMENTS):
             chosen_arm = gpts_learners[j].convert_value_to_arm(chosen_budget[j])
             chosen_arm = int(chosen_arm[0])
             clicks = np.round(env.round_budget(chosen_arm, j))
-            if clicks <= 0: clicks = 1
             gpts_learners[j].update(chosen_arm, clicks)
 
             # Pricing: problem can be decomposed. The optimal solution is the union
@@ -91,6 +92,19 @@ chosen_budget = opt.optimize(base_matrix)
 chosen_arms = [gpts_learners[j].convert_value_to_arm(chosen_budget[j])[0] for j in range(0, N_CLASSES)]
 optimized_alloc = [env.means[j][chosen_arms[j]] for j in range(0, N_CLASSES)]
 optimized_revenue = [optimized_alloc[j] * best_values_per_click[j] for j in range(0, N_CLASSES)]
+
+# Storing results
+timestamp = str(datetime.timestamp(datetime.now()))
+exp_rew = np.mean(per_experiment_revenues, axis=0)
+with open(timestamp + "-rew.csv", "w") as writeFile:
+    writer = csv.writer(writeFile)
+    writer.writerow(exp_rew)
+writeFile.close()
+cla_rew = np.sum(optimized_revenue) * np.ones(len(exp_rew))
+with open(timestamp + "-rew.csv", "w") as writeFile:
+    writer = csv.writer(writeFile)
+    writer.writerow(exp_rew)
+writeFile.close()
 
 # Print aggregated results
 aggr_optimal_revenue = np.sum(optimized_revenue)

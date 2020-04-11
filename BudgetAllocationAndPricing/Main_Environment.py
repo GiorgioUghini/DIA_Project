@@ -37,7 +37,7 @@ class MainEnvironment():
     def round_budget(self, pulled_arm, userType):
         mean = self.means[userType][pulled_arm]
         # We are supposing same variance among all userType:
-        return np.random.normal(mean, self.sigma)
+        return max(1.0, np.random.normal(mean, self.sigma))
 
     def round_pricing(self, pulled_arm, clicks, userType):
         rewards = np.random.binomial(clicks, self.pr_probabilities[userType][pulled_arm][1])
