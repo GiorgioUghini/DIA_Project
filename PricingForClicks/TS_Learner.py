@@ -8,6 +8,7 @@ class TS_Learner(Learner):
         super().__init__(n_arms)
         self.beta_parameters = np.ones((n_arms, 2))
         self.arms = arms
+        self.arms_history = []
 
     def pull_arm(self):
         idx = np.argmax(np.random.beta(self.beta_parameters[:, 0], self.beta_parameters[:, 1]) * self.arms[:, 0])
@@ -18,3 +19,4 @@ class TS_Learner(Learner):
         self.beta_parameters[pulled_arm, 0] += reward
         self.beta_parameters[pulled_arm, 1] += 1-reward
         self.update_observations(pulled_arm, successes)
+        self.arms_history.append(pulled_arm)

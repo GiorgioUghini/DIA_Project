@@ -8,6 +8,7 @@ class UCB1_Learner(Learner):
         n_arms = len(arms)
         super().__init__(n_arms)
         self.results_per_arm = [(0, 0, arms[i]) for i in range(n_arms)]
+        self.arms_history = []
 
     def pull_arm(self):
         self.t += 1
@@ -26,5 +27,4 @@ class UCB1_Learner(Learner):
         reward = successes / (successes + failures)
         new_avg = (avg * n + reward) / (n+1)
         self.results_per_arm[pulled_arm] = (new_avg, n + 1, p)
-
-
+        self.arms_history.append(pulled_arm)
