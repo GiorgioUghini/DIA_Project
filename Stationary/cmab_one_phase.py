@@ -12,9 +12,9 @@ total_budget = 90
 # budgets_j = [ [0, 2, 4, ..., 34] , [0, 2, 4, ..., 38], [0, 2, 4, ..., 36] ]
 budgets_j = [ np.arange(min_budgets[v], max_budgets[v] + 1, step) for v in range(0, N_CLASSES) ]      # +1 to max_budget because range does not include the right extreme of the interval by default
 n_arms = [ len(budgets_j[v]) for v in range(0, N_CLASSES) ]
-sigma = 100
-T = 150
-n_experiments = 40
+sigma = 200
+T = 41
+n_experiments = 5
 per_experiment_rewards_gpts = [[] for i in range(0, N_CLASSES)]
 
 for e in range(0, n_experiments):

@@ -10,15 +10,15 @@ from datetime import datetime
 from scipy import optimize
 
 
-TIME_SPAN = 180
+TIME_SPAN = 90
 N_CLASSES = 3
-N_EXPERIMENTS = 50
+N_EXPERIMENTS = 1
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
 total_budget = 90
 step = 2
-sigma = 100
+sigma = 200
 
 # budgets_j = [ [0, 2, 4, ..., 34] , [0, 2, 4, ..., 38], [0, 2, 4, ..., 36] ]
 # +1 to max_budget because range does not include the right extreme of the interval by default
@@ -72,6 +72,9 @@ for e in range(0, N_EXPERIMENTS):
             failures = clicks - successes
             pr_ts_learners[j].update(pulled_arm, successes, failures)
             aggregated_revenue += successes * env.pr_probabilities[j][pulled_arm][0]    # For all classes
+
+            if t % 10 == 0 and j == 0:
+                gpts_learners[j].plotFn()
 
         # Append the revenue of this day to the array for this experiment
         experiment_revenues.append(aggregated_revenue)

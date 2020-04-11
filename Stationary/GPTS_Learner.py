@@ -1,7 +1,9 @@
 from Learner import *
 import numpy as np
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
+from sklearn.gaussian_process.kernels import RBF, WhiteKernel, ConstantKernel as C
+import matplotlib.pyplot as plt
+import utils
 
 
 class GPTS_Learner(Learner):
@@ -11,8 +13,8 @@ class GPTS_Learner(Learner):
         self.means = np.zeros(self.n_arms)
         self.sigmas = np.ones(self.n_arms)*10
         self.pulled_arms = []
-        kernel = C(1e4, (1e-3, 1e4)) * RBF(1, (1e-3, 1e3))
-        self.gp = GaussianProcessRegressor(kernel=kernel, alpha=1, normalize_y=True, n_restarts_optimizer=25)
+        kernel = C(1e7, (1e5, 1e9)) * RBF(10, (1e-2, 1e2))
+        self.gp = GaussianProcessRegressor(kernel=kernel, alpha=200**2, normalize_y=True, n_restarts_optimizer=25)
 
     def update_observations(self, arm_idx, reward):
         super().update_observations(arm_idx, reward)
@@ -41,11 +43,16 @@ class GPTS_Learner(Learner):
         return np.where(self.arms == value)
 
     '''
+    def checkHyperparam(self):
+        a = self.gp.kernel_.get_params()
+        print(a)
+
+
     Use this function if you want to plot the current status of the prediction
     just call the correct learner for a certain usertype and edit the correct function below.
     
     def plotFn(self):
-        correct = 3500 * (1 - np.exp((-1*self.arms)/10))
+        correct = utils.getClickCurve(3, 0, self.arms)
         plt.figure(self.t)
         plt.plot(self.arms, correct, 'r:', 'real fn')
         plt.plot(self.pulled_arms, self.collected_rewards.ravel(), 'ro', 'observations')
@@ -56,4 +63,6 @@ class GPTS_Learner(Learner):
                  alpha=.5, fc='b', ec='None', label='95% confidence interval')
         plt.legend(loc='lower right')
         plt.show()
-    '''
+        print("OK")
+        '''
+
