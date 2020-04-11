@@ -78,7 +78,7 @@ for e in range(0, N_EXPERIMENTS):
             aggregated_revenue += successes * env.pr_probabilities[j][pulled_arm][0]    # For all classes
 
         #RUSSO METTI IL BREAKPOINT QUI DENTRO e guarda il vettore debug per capire cosa è successo
-        if aggregated_revenue < 1.5e6:
+        if aggregated_revenue < 1.5e6 and t > 20:
             print("ATTENTION, low revenue. Debug: " + str(debug))
         # Append the revenue of this day to the array for this experiment
         experiment_revenues.append(aggregated_revenue)
