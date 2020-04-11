@@ -23,6 +23,9 @@ print("Best price ", best_price)
 optimum = best_demand * clicks
 
 best_n_arms = math.ceil((T * np.log10(T)) ** 0.25)  # the optimal number of arms
+best_beta_params = []  # beta parameters of the optimal number of arms
+best_ucb1_params = []  # parameters for the optimal number of arms
+
 print("Optimal number of arms: %d" % best_n_arms)
 
 n_experiments = 50
