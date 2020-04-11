@@ -12,7 +12,7 @@ from scipy import optimize
 
 TIME_SPAN = 90
 N_CLASSES = 3
-N_EXPERIMENTS = 1
+N_EXPERIMENTS = 50
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
