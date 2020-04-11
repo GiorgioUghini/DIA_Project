@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import utils as u
 from context_generator.TSContextGenerator import *
 from datetime import datetime
+import csv
 
 regret = []
 number_of_arms = 6
@@ -33,3 +34,11 @@ plt.legend(["6 arms - TS"])
 plt.xlabel("number of clicks")
 plt.ylabel("regret")
 plt.show()
+
+# Storing results
+time = datetime.now().strftime("%d-%m-%Y-at-%H-%M-%S")
+proc_regret = np.mean(regret, axis=0)
+with open(time + "-regret.csv", "w") as writeFile:
+    writer = csv.writer(writeFile)
+    writer.writerow(proc_regret)
+writeFile.close()
