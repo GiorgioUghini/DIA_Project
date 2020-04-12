@@ -15,6 +15,7 @@ def demand(x):
 B = 5000  # avg number of clicks per day
 var = 200  # variance in number of clicks per day
 T = 300  # number of days
+multi_arms = False
 
 clicks = np.round(np.random.normal(B, var, T))  # num of users who clicked the ads on each day
 best_price = optimize.fmin(lambda x: -demand(x) * x, T / 2)[0]
@@ -29,7 +30,7 @@ best_ucb1_params = []  # parameters for the optimal number of arms
 print("Optimal number of arms: %d" % best_n_arms)
 
 n_experiments = 50
-n_arms_arr = range(best_n_arms-3, best_n_arms + 4)
+n_arms_arr = range(best_n_arms-3, best_n_arms + 4) if multi_arms else [best_n_arms]
 
 for n_arms in n_arms_arr:
     print(n_arms, "arms")

@@ -73,7 +73,7 @@ for e in range(0, N_EXPERIMENTS):
             successes = env.round_pricing(pulled_arm, clicks, j)    # Successful clicks with current budget
             failures = clicks - successes
             pr_ts_learners[j].update(pulled_arm, successes, failures)
-            debug.append((chosen_arm, pulled_arm, successes, failures))
+            debug.append((env.pr_probabilities[j][pulled_arm][1], pulled_arm, successes, failures))
 
             aggregated_revenue += successes * env.pr_probabilities[j][pulled_arm][0]    # For all classes
 
