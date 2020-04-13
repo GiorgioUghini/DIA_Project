@@ -12,16 +12,12 @@ def demand(x):
     return utils.getDemandCurve(-1, x)  # aggregated fn
 
 
-B = 5000  # avg number of clicks per day
-var = 200  # variance in number of clicks per day
+B = 200  # avg number of clicks per day
+var = 20  # variance in number of clicks per day
 T = 300  # number of days
-multi_arms = False
+multi_arms = True
 
 clicks = np.round(np.random.normal(B, var, T))  # num of users who clicked the ads on each day
-best_price = optimize.fmin(lambda x: -demand(x) * x, T / 2)[0]
-best_demand = demand(best_price) * best_price
-print("Best price ", best_price)
-optimum = best_demand * clicks
 
 best_n_arms = math.ceil((T * np.log10(T)) ** 0.25)  # the optimal number of arms
 best_beta_params = []  # beta parameters of the optimal number of arms
@@ -29,13 +25,20 @@ best_ucb1_params = []  # parameters for the optimal number of arms
 
 print("Optimal number of arms: %d" % best_n_arms)
 
-n_experiments = 50
+n_experiments = 1000
 n_arms_arr = range(best_n_arms-3, best_n_arms + 4) if multi_arms else [best_n_arms]
 
 for n_arms in n_arms_arr:
     print(n_arms, "arms")
     ts_env = Environment(n_arms=n_arms, demandCurve=demand, minPrice=0, maxPrice=400)
     ucb1_env = Environment(n_arms=n_arms, demandCurve=demand, minPrice=0, maxPrice=400)
+    prices = ts_env.probabilities[:, 0]
+    best_arm = np.argmax(demand(prices) * prices)
+    best_price = prices[best_arm]
+    print("Theoretical best arm for %d arms: %d" % (n_arms, best_arm))
+    print("Theoretical best price for %d arms: %d" % (n_arms, best_price))
+    optimum = demand(best_price) * best_price * clicks
+
     all_ts_regret = []
     all_ucb1_regret = []
     for e in range(0, n_experiments):
