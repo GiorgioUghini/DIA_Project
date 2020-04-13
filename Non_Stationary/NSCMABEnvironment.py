@@ -10,7 +10,7 @@ class NSCMABEnvironment():
     def __init__(self, budgets_list, sigma, horizon):
         self.N_PHASES = 4
         # We hardcode N_PHASES and all the functions here because it would compromise the main code
-        # to pass all these as parameters. However, it can be easily done, making the code more
+        # to pass all these, as parameters. However, it can be easily done, making the code more
         # reusable but less readable
         self.t = 0
         self.budgets = budgets_list
