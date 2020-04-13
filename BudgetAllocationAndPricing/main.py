@@ -10,9 +10,9 @@ from datetime import datetime
 from scipy import optimize
 
 
-TIME_SPAN = 75
+TIME_SPAN = 50
 N_CLASSES = 3
-N_EXPERIMENTS = 1
+N_EXPERIMENTS = 100
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
@@ -27,7 +27,7 @@ bdg_n_arms = [len(budgets_j[x]) for x in range(0, N_CLASSES)]
 per_experiment_revenues = []
 
 #pr_n_arms = math.ceil((TIME_SPAN * np.log10(TIME_SPAN)) ** 0.25)  # the optimal number of arms
-pr_n_arms = 6  # Non cambiare, è per debug
+pr_n_arms = 6  # Non cambiare, è per fare venire il grafico zoommato nei primi giorni
 best_prices = [optimize.fmin(lambda x: -utils.getDemandCurve(j, x) * x, TIME_SPAN / 2)[0]
                for j in range(0, N_CLASSES)]
 best_values_per_click = [utils.getDemandCurve(j, best_prices[j]) * best_prices[j]
@@ -43,7 +43,7 @@ for e in range(0, N_EXPERIMENTS):
                       for v in range(0, N_CLASSES) ]
     pr_ts_learners = [ TS_Learner(arms=env.pr_probabilities[v]) for v in range(0, N_CLASSES) ]
     experiment_revenues = []
-    print("Esperimento: " + str(e))
+    print("Esperimento: " + str(e + 1))
 
     for t in range(0, TIME_SPAN):
         # Create matrix for the optimization process by sampling the GPTS
@@ -59,7 +59,6 @@ for e in range(0, N_EXPERIMENTS):
         chosen_budget = opt.optimize(base_matrix)
 
         aggregated_revenue = 0
-        debug = []
         for j in range(0, N_CLASSES):
             # Update model of the GPTS
             chosen_arm = gpts_learners[j].convert_value_to_arm(chosen_budget[j])
@@ -73,15 +72,16 @@ for e in range(0, N_EXPERIMENTS):
             successes = env.round_pricing(pulled_arm, clicks, j)    # Successful clicks with current budget
             failures = clicks - successes
             pr_ts_learners[j].update(pulled_arm, successes, failures)
-            debug.append((env.pr_probabilities[j][pulled_arm][1], pulled_arm, successes, failures))
 
             aggregated_revenue += successes * env.pr_probabilities[j][pulled_arm][0]    # For all classes
 
-        #RUSSO METTI IL BREAKPOINT QUI DENTRO e guarda il vettore debug per capire cosa è successo
-        if aggregated_revenue < 1.5e6 and t > 20:
-            print("ATTENTION, low revenue. Debug: " + str(debug))
         # Append the revenue of this day to the array for this experiment
         experiment_revenues.append(aggregated_revenue)
+
+        if t % 10 == 0:
+            timestampStr = datetime.now().strftime("%H:%M:%S")
+            print(timestampStr + " - Step %s of %s (%s exp)" % (
+            (t / 10), TIME_SPAN / 10, e + 1))
 
     # Append the array of revenues of this experiment to the main one, for statistical purposes
     per_experiment_revenues.append(experiment_revenues)
@@ -108,9 +108,9 @@ with open(timestamp + "-rew.csv", "w") as writeFile:
     writer.writerow(exp_rew)
 writeFile.close()
 cla_rew = np.sum(optimized_revenue) * np.ones(len(exp_rew))
-with open(timestamp + "-rew.csv", "w") as writeFile:
+with open(timestamp + "-optimal-rew.csv", "w") as writeFile:
     writer = csv.writer(writeFile)
-    writer.writerow(exp_rew)
+    writer.writerow(cla_rew)
 writeFile.close()
 
 # Print aggregated results
