@@ -35,7 +35,7 @@ best_values_per_click = [utils.getDemandCurve(j, best_prices[j]) * best_prices[j
 
 
 for e in range(0, N_EXPERIMENTS):
-    opt = CMABOptimizer(max_budget=total_budget, campaign_number=N_CLASSES, step=step)
+    opt = CMABOptimizer(max_budget=total_budget, campaigns_number=N_CLASSES, step=step)
     env = MainEnvironment(budgets_list=budgets_j, sigma=sigma,
                           pr_n_arms=[pr_n_arms for _ in range(0, N_CLASSES)],
                           pr_minPrice=[100, 100, 100], pr_maxPrice=[400, 400, 400])

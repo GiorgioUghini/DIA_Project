@@ -1,54 +1,55 @@
 import matplotlib.pyplot as plt
 from CMABOptimizer import *
 from Stationary.GPTS_Learner import *
-
+from datetime import datetime
 from Non_Stationary.NSCMABEnvironment import *
 from Non_Stationary.GPSWTS_Learner import *
+import csv
 
 
 # Assumption: Static min/max budget allocation for all three phases
-step = 2
+N_CLASSES = 3
+N_EXPERIMENTS = 30
+TIME_SPAN = 364  # TIME_SPAN should be a multiple of env.N_PHASES or not all phases wil have same length
 min_budgets = [0, 0, 0]
 max_budgets = [70, 80, 40]
+step = 2
 total_budget = 80
-budgets_j = [np.arange(min_budgets[0], max_budgets[0] + 1, step), np.arange(min_budgets[1], max_budgets[1] + 1, step), np.arange(min_budgets[2], max_budgets[2] + 1, step)]      # +1 to max_budget because range does not include the right extreme of the interval by default
-n_arms = [len(budgets_j[0]), len(budgets_j[1]), len(budgets_j[2])]
+WINDOW_SIZE = int(4 * np.sqrt(TIME_SPAN * np.log10(TIME_SPAN)))  #  4 * sqrt(T log(T)) is like 122 for 364 days
 sigma = 200
-T = 364  # T should be a multiple of env.N_PHASES or not all phases wil have same length
-J = 3
-n_experiments = 30
-per_experiment_rewards_gpts = [[] for i in range(0, J)]
-per_experiment_rewards_gpswts = [[] for j in range(0, J)]
-window_size = 129  #  4 * sqrt(N log(N)) with only one phase
 
-for e in range(0, n_experiments):
-    opt = CMABOptimizer(max_budget=total_budget, campaign_number=J, step=step)
+budgets_j = [np.arange(min_budgets[v], max_budgets[v] + 1, step) for v in range(0, N_CLASSES) ]      # +1 to max_budget because range does not include the right extreme of the interval by default
+n_arms = [len(budgets_j[v]) for v in range(0, N_CLASSES) ]
+per_experiment_rewards_gpts = [[] for i in range(0, N_CLASSES)]
+per_experiment_rewards_gpswts = [[] for j in range(0, N_CLASSES)]
+colNum = int(np.floor_divide(total_budget, step) + 1)
 
-    env = NSCMABEnvironment(budgets_list=budgets_j, sigma=sigma, horizon=T)
+for e in range(0, N_EXPERIMENTS):
+    opt = CMABOptimizer(max_budget=total_budget, campaigns_number=N_CLASSES, step=step)
+    env = NSCMABEnvironment(budgets_list=budgets_j, sigma=sigma, horizon=TIME_SPAN)
+    gpts_learners = [ GPTS_Learner(n_arms=n_arms[v], arms=budgets_j[v]) for v in range(0, N_CLASSES) ]
+    gpsw_learners = [GPSWTS_Learner(n_arms=n_arms[v], arms=budgets_j[v], window_size=WINDOW_SIZE) for v in range(0, N_CLASSES) ]
 
-    gpts_learners = [GPTS_Learner(n_arms=n_arms[0], arms=budgets_j[0]), GPTS_Learner(n_arms=n_arms[1], arms=budgets_j[1]), GPTS_Learner(n_arms=n_arms[2], arms=budgets_j[2])]
+    for t in range(0, TIME_SPAN):
+        # Logger of completion
+        if t % int(TIME_SPAN/7) == 0:
+            timestampStr = datetime.now().strftime("%H:%M:%S")
+            print(timestampStr + " - Step %s of %s (%s exp)" % ((t / int(TIME_SPAN/7)), TIME_SPAN / int(TIME_SPAN/7), e + 1))
 
-    gpsw_learners = [GPSWTS_Learner(n_arms=n_arms[0], arms=budgets_j[0], window_size=window_size), GPSWTS_Learner(n_arms=n_arms[1], arms=budgets_j[1], window_size=window_size), GPSWTS_Learner(n_arms=n_arms[2], arms=budgets_j[2], window_size=window_size)]
-
-
-    for t in range(0, T):
         # TS: Create matrix for the optimization process by sampling the GPTS
-        ts_colNum = int(np.floor_divide(total_budget, step) + 1)
-        ts_base_matrix = np.ones((J, ts_colNum)) * np.NINF
-        for j in range(0, J):
+        ts_base_matrix = np.ones((N_CLASSES, colNum)) * np.NINF
+        for j in range(0, N_CLASSES):
             ts_sampled_values = gpts_learners[j].sample_values()
             ts_bubblesNum = int(min_budgets[j] / step)
-            ts_indices_list = [i for i in range(ts_bubblesNum + ts_colNum * j, ts_bubblesNum + ts_colNum * j + len(ts_sampled_values))]
+            ts_indices_list = [i for i in range(ts_bubblesNum + colNum * j, ts_bubblesNum + colNum * j + len(ts_sampled_values))]
             np.put(ts_base_matrix, ts_indices_list, ts_sampled_values)
 
-
         # SWTS: Create matrix for the optimization process by sampling the GPTS
-        sw_colNum = int(np.floor_divide(total_budget, step) + 1)
-        sw_base_matrix = np.ones((J, sw_colNum)) * np.NINF
-        for j in range(0, J):
+        sw_base_matrix = np.ones((N_CLASSES, colNum)) * np.NINF
+        for j in range(0, N_CLASSES):
             sw_sampled_values = gpsw_learners[j].sample_values()
             sw_bubblesNum = int(min_budgets[j] / step)
-            sw_indices_list = [i for i in range(sw_bubblesNum + sw_colNum * j, sw_bubblesNum + sw_colNum * j + len(sw_sampled_values))]
+            sw_indices_list = [i for i in range(sw_bubblesNum + colNum * j, sw_bubblesNum + colNum * j + len(sw_sampled_values))]
             np.put(sw_base_matrix, sw_indices_list, sw_sampled_values)
 
         # Choose budget thanks to the samples in the matrix
@@ -57,7 +58,7 @@ for e in range(0, n_experiments):
 
         # Update model of the GPTS
         ts_arms_chosen = []
-        for j in range(0, J):
+        for j in range(0, N_CLASSES):
             ts_chosen_arm = gpts_learners[j].convert_value_to_arm(ts_chosen_budget[j])
             ts_chosen_arm = int(ts_chosen_arm[0])
             ts_reward = env.round(ts_chosen_arm, j)
@@ -65,7 +66,7 @@ for e in range(0, n_experiments):
 
         # Update model of the GPSWTS
         sw_arms_chosen = []
-        for j in range(0, J):
+        for j in range(0, N_CLASSES):
             sw_chosen_arm = gpsw_learners[j].convert_value_to_arm(sw_chosen_budget[j])
             sw_chosen_arm = int(sw_chosen_arm[0])
             sw_reward = env.round(sw_chosen_arm, j)
@@ -74,23 +75,22 @@ for e in range(0, n_experiments):
         env.ahead()
 
     # Append rewards for statistical purposes
-    for j in range(0, J):
+    for j in range(0, N_CLASSES):
         per_experiment_rewards_gpts[j].append(gpts_learners[j].collected_rewards)
         per_experiment_rewards_gpswts[j].append(gpsw_learners[j].collected_rewards)
 
 opt_per_phase = []
 for p in range(0, env.N_PHASES):
     # Compute the REAL optimum allocation by solving the optimization problem with the real values
-    colNum = int(np.floor_divide(total_budget, step) + 1)
-    base_matrix = np.ones((J, colNum)) * np.NINF
-    for j in range(0, J):
+    base_matrix = np.ones((N_CLASSES, colNum)) * np.NINF
+    for j in range(0, N_CLASSES):
         real_values = env.means[j*env.N_PHASES + p]
         bubblesNum = int(min_budgets[j] / step)
         indices_list = [i for i in range(bubblesNum + colNum * j, bubblesNum + colNum * j + len(real_values))]
         np.put(base_matrix, indices_list, real_values)
     chosen_budget = opt.optimize(base_matrix)  # Optimal allocation in phase p
     optimal_val = 0
-    for j in range(0, J):
+    for j in range(0, N_CLASSES):
         optimal_val += fun(chosen_budget[j], j, p)
     opt_per_phase.append(optimal_val)
 
@@ -99,27 +99,39 @@ aggr_rewards_gpts = np.sum(per_experiment_rewards_gpts, axis=0)
 aggr_rewards_gpts = np.mean(aggr_rewards_gpts, axis=0)
 aggr_rewards_gpswts = np.sum(per_experiment_rewards_gpswts, axis=0)
 aggr_rewards_gpswts = np.mean(aggr_rewards_gpswts, axis=0)
-plt.figure(0)
-plt.ylabel("Regret")
-plt.xlabel("t")
 
+plt.figure(0)
+plt.ylabel("Regret [clicks]")
+plt.xlabel("Time [days]")
 optimal_vector = []
-for t in range(0, T):
-    phase_size = T / env.N_PHASES
+for t in range(0, TIME_SPAN):
+    phase_size = TIME_SPAN / env.N_PHASES
     current_phase = int(t / phase_size)
     optimal_vector.append(opt_per_phase[current_phase])
-
 plt.plot(np.cumsum(optimal_vector - aggr_rewards_gpts), 'r')
 plt.plot(np.cumsum(optimal_vector - aggr_rewards_gpswts), 'b')
 plt.legend(["GPTS", "GP-SWTS"])
 plt.show()
 
 plt.figure(1)
-plt.ylabel("Clicks")
-plt.xlabel("t")
-
+plt.ylabel("Reward [clicks]")
+plt.xlabel("Time [days]")
 plt.plot(aggr_rewards_gpts, 'r')
 plt.plot(aggr_rewards_gpswts, 'b')
 plt.plot(optimal_vector, 'k--')
 plt.legend(["GPTS", "GP-SWTS", "Optimal"])
 plt.show()
+
+# Storing results
+timestamp = str(datetime.timestamp(datetime.now()))
+regretTS = np.cumsum(optimal_vector - aggr_rewards_gpts)
+with open(timestamp + "-gpts_regret.csv", "w") as writeFile:
+    writer = csv.writer(writeFile)
+    writer.writerow(regretTS)
+writeFile.close()
+
+regretSW = np.cumsum(optimal_vector - aggr_rewards_gpswts)
+with open(timestamp + "-gp_swts_regret.csv", "w") as writeFile:
+    writer = csv.writer(writeFile)
+    writer.writerow(regretSW)
+writeFile.close()
