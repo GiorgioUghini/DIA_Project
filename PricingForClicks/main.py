@@ -3,7 +3,6 @@ from PricingForClicks.Environment import *
 from PricingForClicks.TS_Learner import *
 from PricingForClicks.UCB1_Learner import *
 import utils, math
-from scipy import optimize
 from scipy.stats import beta, norm
 
 
