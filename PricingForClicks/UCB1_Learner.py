@@ -24,7 +24,6 @@ class UCB1_Learner(Learner):
 
     def update(self, pulled_arm, successes, failures):
         (avg, n, p) = self.results_per_arm[pulled_arm]
-        reward = successes / (successes + failures)
-        new_avg = (avg * n + reward) / (n+1)
-        self.results_per_arm[pulled_arm] = (new_avg, n + 1, p)
+        new_avg = (avg * n + successes) / (n+successes + failures)
+        self.results_per_arm[pulled_arm] = (new_avg, n + successes + failures, p)
         self.arms_history.append(pulled_arm)
