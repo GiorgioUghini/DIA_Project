@@ -26,6 +26,12 @@ for e in range(0, N_EXPERIMENTS):
     gpts_learners = [ GPTS_Learner(n_arms=n_arms[v], arms=budgets_j[v]) for v in range(0, N_CLASSES) ]
 
     for t in range(0, TIME_SPAN):
+        # Logger of completion
+        if t % int(TIME_SPAN / 7) == 0:
+            timestampStr = datetime.now().strftime("%H:%M:%S")
+            print(timestampStr + " - Step %s of %s (%s exp of %s)" % (
+            (t / int(TIME_SPAN / 7)) + 1, TIME_SPAN / int(TIME_SPAN / 7), e + 1, N_EXPERIMENTS))
+
         # Create matrix for the optimization process by sampling the GPTS
         base_matrix = np.ones((N_CLASSES, colNum)) * np.NINF
         for j in range(0, N_CLASSES):
@@ -76,21 +82,16 @@ plt.show()
 plt.figure(1)
 plt.ylabel("Reward [clicks]")
 plt.xlabel("Time [days]")
-plt.plot(aggr_rewards, 'b')
-opt_vect = aggr_optimal_value * len(aggr_rewards)
+plt.plot(np.mean(aggr_rewards, axis=0), 'b')
+opt_vect = aggr_optimal_value * np.ones(len(fn))
 plt.plot(opt_vect, 'k--')
-plt.legend(["GPTS", "GP-SWTS", "Optimal"])
+plt.legend(["GPTS", "Optimal"])
 plt.show()
 
 # Storing results
 timestamp = str(datetime.timestamp(datetime.now()))
 
-with open(timestamp + "-gpts_regret.csv", "w") as writeFile:
+with open(timestamp + "-stationary-gpts_regret.csv", "w") as writeFile:
     writer = csv.writer(writeFile)
     writer.writerow(fn)
-writeFile.close()
-
-with open(timestamp + "-gp_swts_regret.csv", "w") as writeFile:
-    writer = csv.writer(writeFile)
-    writer.writerow(opt_vect)
 writeFile.close()
