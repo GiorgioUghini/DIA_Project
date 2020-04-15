@@ -4,10 +4,8 @@ from Stationary.GPTS_Learner import *
 from PricingForClicks.TS_Learner import *
 from BudgetAllocationAndPricing.Main_Environment import *
 import numpy as np
-import math
 import csv
 from datetime import datetime
-from scipy import optimize
 
 
 TIME_SPAN = 50
@@ -28,11 +26,6 @@ per_experiment_revenues = []
 
 #pr_n_arms = math.ceil((TIME_SPAN * np.log10(TIME_SPAN)) ** 0.25)  # the optimal number of arms
 pr_n_arms = 6  # Non cambiare, è per fare venire il grafico zoommato nei primi giorni
-best_prices = [optimize.fmin(lambda x: -utils.getDemandCurve(j, x) * x, TIME_SPAN / 2)[0]
-               for j in range(0, N_CLASSES)]
-best_values_per_click = [utils.getDemandCurve(j, best_prices[j]) * best_prices[j]
-                         for j in range(0, N_CLASSES)]
-
 
 for e in range(0, N_EXPERIMENTS):
     opt = CMABOptimizer(max_budget=total_budget, campaigns_number=N_CLASSES, step=step)
@@ -44,6 +37,15 @@ for e in range(0, N_EXPERIMENTS):
     pr_ts_learners = [ TS_Learner(arms=env.pr_probabilities[v]) for v in range(0, N_CLASSES) ]
     experiment_revenues = []
     print("Esperimento: " + str(e + 1))
+
+    best_arms = []
+    best_prices = []
+    best_values_per_click = []
+    for c in range(N_CLASSES):
+        prices = env.pr_probabilities[c][:, 0]
+        best_arms.append(np.argmax(prices * utils.getDemandCurve(c, prices)))
+        best_prices.append(prices[best_arms[c]])
+        best_values_per_click.append(utils.getDemandCurve(c, best_prices[c]) * best_prices[c])
 
     for t in range(0, TIME_SPAN):
         # Create matrix for the optimization process by sampling the GPTS
