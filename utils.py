@@ -13,11 +13,11 @@ def getClickCurve(phase, userType, x_values):
     elif(phase == 1):
         # Low interest / No competitors
         if(userType == 0):
-            return 5700 * np.log(x_values/ 27 + 1)
+            return 3150 * np.log(x_values / 7.5 + 1)
         elif(userType == 1):
-            return 6500 * np.log(x_values/ 20 + 1)
+            return 3900 * np.log(x_values / 5 + 1)
         else:
-            return 4500 * (1 - np.exp((-1 * x_values) / 40)) + 1500 * np.log(x_values/ 35 + 1)
+            return 2500 * np.log(x_values / 10 + 1)
     elif (phase == 2):
         # Low interest / With competitors
         if(userType == 0):

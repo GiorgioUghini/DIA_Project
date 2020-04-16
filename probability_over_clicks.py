@@ -31,7 +31,7 @@ plt.legend(["Northern Italy with childrens", "Northern Italy without childrens",
 ax.set(xlabel='Budget allocated to subcampaign in k€', ylabel='number of clicks',
        title='Number of clicks over daily budget - Low interest, No competitors')
 ax.grid()
-plt.savefig('curves/daily_clicks_00.png')
+plt.savefig('curves/real_curves/daily_clicks_00.png')
 plt.show()
 
 fig2, ax2 = plt.subplots()
@@ -42,7 +42,7 @@ plt.legend(["Northern Italy with childrens", "Northern Italy without childrens",
 ax2.set(xlabel='Budget allocated to subcampaign in k€', ylabel='number of clicks',
        title='Number of clicks over daily budget - Low interest, With competitors')
 ax2.grid()
-plt.savefig('curves/daily_clicks_01.png')
+plt.savefig('curves/real_curves/daily_clicks_01.png')
 plt.show()
 
 fig3, ax3 = plt.subplots()
@@ -53,7 +53,7 @@ plt.legend(["Northern Italy with childrens", "Northern Italy without childrens",
 ax3.set(xlabel='Budget allocated to subcampaign in k€', ylabel='number of clicks',
        title='Number of clicks over daily budget - High interest, With competitors')
 ax3.grid()
-plt.savefig('curves/daily_clicks_11.png')
+plt.savefig('curves/real_curves/daily_clicks_11.png')
 plt.show()
 
 fig4, ax4 = plt.subplots()
@@ -64,5 +64,5 @@ plt.legend(["Northern Italy with childrens", "Northern Italy without childrens",
 ax4.set(xlabel='Budget allocated to subcampaign in k€', ylabel='number of clicks',
        title='Number of clicks over daily budget - High interest, No competitors')
 ax4.grid()
-plt.savefig('curves/daily_clicks_10.png')
+plt.savefig('curves/real_curves/daily_clicks_10.png')
 plt.show()
