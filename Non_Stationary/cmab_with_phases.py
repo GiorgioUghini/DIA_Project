@@ -12,9 +12,9 @@ N_CLASSES = 3
 N_EXPERIMENTS = 30
 TIME_SPAN = 364  # TIME_SPAN should be a multiple of env.N_PHASES or not all phases wil have same length
 min_budgets = [10, 10, 10]
-max_budgets = [70, 80, 40]
+max_budgets = [70, 80, 60]
 step = 2
-total_budget = 80
+total_budget = 110
 WINDOW_SIZE = int(4 * np.sqrt(TIME_SPAN * np.log10(TIME_SPAN)))  #  4 * sqrt(T log(T)) is like 122 for 364 days
 sigma = 200
 
