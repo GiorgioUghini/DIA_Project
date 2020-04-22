@@ -19,8 +19,8 @@ class Context:
         scores = np.zeros(len(arms))
         for d in self.demands_index_list:
             for i in range(len(arms)):
-                scores[i] += np.random.beta(context_generator.beta_params[i][d][0], context_generator.beta_params[i][d][1], size=1)[0] * probabilities_of_users[d]
-
+                scores[i] += np.random.beta(context_generator.realizations_per_arm_per_demand[i][d][0] + 1,
+                                            context_generator.realizations_per_arm_per_demand[i][d][1] + 1, size=1)[0] * probabilities_of_users[d]
         scores = scores * arms
         return np.argmax(scores)
 
