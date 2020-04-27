@@ -1,3 +1,6 @@
 .idea
 pycharm_venv
 __pycache__/
+pdf/main.*
+!pdf/main.tex
+*.log
