@@ -10,7 +10,7 @@ from datetime import datetime
 
 TIME_SPAN = 50
 N_CLASSES = 3
-N_EXPERIMENTS = 100
+N_EXPERIMENTS = 50
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
@@ -26,12 +26,14 @@ per_experiment_revenues = []
 
 #pr_n_arms = math.ceil((TIME_SPAN * np.log10(TIME_SPAN)) ** 0.25)  # the optimal number of arms
 pr_n_arms = 6  # Non cambiare, è per fare venire il grafico zoommato nei primi giorni
+pr_maxPrice = [400, 400, 400]
+pr_minPrice = [100, 100, 100]
 
 for e in range(0, N_EXPERIMENTS):
     opt = CMABOptimizer(max_budget=total_budget, campaigns_number=N_CLASSES, step=step)
     env = MainEnvironment(budgets_list=budgets_j, sigma=sigma,
                           pr_n_arms=[pr_n_arms for _ in range(0, N_CLASSES)],
-                          pr_minPrice=[100, 100, 100], pr_maxPrice=[400, 400, 400])
+                          pr_minPrice=pr_minPrice, pr_maxPrice=pr_maxPrice)
     gpts_learners = [ GPTS_Learner(n_arms=bdg_n_arms[v], arms=budgets_j[v])
                       for v in range(0, N_CLASSES) ]
     pr_ts_learners = [ TS_Learner(arms=env.pr_probabilities[v]) for v in range(0, N_CLASSES) ]
@@ -48,11 +50,21 @@ for e in range(0, N_EXPERIMENTS):
         best_values_per_click.append(utils.getDemandCurve(c, best_prices[c]) * best_prices[c])
 
     for t in range(0, TIME_SPAN):
-        # Create matrix for the optimization process by sampling the GPTS
-        colNum = int(np.floor_divide(total_budget, step) + 1)
+        # Start optimization data structure creation
+        secondStageRows = []
+        # Create FIRST matrix by sampling pricing and budget
+        for j in range(0, N_CLASSES):
+            colNum = pr_n_arms
+            rowNum = int(np.floor_divide(total_budget, step) + 1)
+            bdg_sampled_values = np.atleast_2d(gpts_learners[j].sample_values()).T
+            pr_sampled_values = np.atleast_2d(pr_ts_learners[j].sample_values())
+            matrix = bdg_sampled_values * pr_sampled_values  # valPerClick * clicks(budget)
+            secondStageRows.append(np.amax(matrix, axis=1))  # remove dependency of price: sum along rows
+        # Create SECOND matrix for the optimization process
+        colNum = rowNum  # that is, int(np.floor_divide(total_budget, step) + 1)
         base_matrix = np.ones((N_CLASSES, colNum)) * np.NINF
         for j in range(0, N_CLASSES):
-            sampled_values = gpts_learners[j].sample_values()
+            sampled_values = secondStageRows[j]  # Row obtained in the first step maximizing elements
             bubblesNum = int(min_budgets[j] / step)
             indices_list = [i for i in range(bubblesNum + colNum * j, bubblesNum + colNum * j + len(sampled_values))]
             np.put(base_matrix, indices_list, sampled_values)
@@ -90,13 +102,24 @@ for e in range(0, N_EXPERIMENTS):
 
 
 # Compute the REAL optimum allocation by solving the optimization problem with the real values
-colNum = int(np.floor_divide(total_budget, step) + 1)
+
+secondStageRows = []
+# Create FIRST matrix by sampling pricing and budget
+for j in range(0, N_CLASSES):
+    colNum = pr_n_arms
+    rowNum = int(np.floor_divide(total_budget, step) + 1)
+    bdg_sampled_values = np.atleast_2d(env.means[j]).T
+    pr_sampled_values = np.atleast_2d(env.pr_means[j])
+    matrix = bdg_sampled_values * pr_sampled_values
+    secondStageRows.append(np.amax(matrix, axis=1))  # remove dependency of price: sum along rows
+# Create SECOND matrix for the optimization process
+colNum = rowNum  # that is, int(np.floor_divide(total_budget, step) + 1)
 base_matrix = np.ones((N_CLASSES, colNum)) * np.NINF
 for j in range(0, N_CLASSES):
-    real_values = env.means[j]
+    sampled_values = secondStageRows[j]  # Row obtained in the first step maximizing elements
     bubblesNum = int(min_budgets[j] / step)
-    indices_list = [i for i in range(bubblesNum + colNum * j, bubblesNum + colNum * j + len(real_values))]
-    np.put(base_matrix, indices_list, real_values)
+    indices_list = [i for i in range(bubblesNum + colNum * j, bubblesNum + colNum * j + len(sampled_values))]
+    np.put(base_matrix, indices_list, sampled_values)
 chosen_budget = opt.optimize(base_matrix)
 chosen_arms = [gpts_learners[j].convert_value_to_arm(chosen_budget[j])[0] for j in range(0, N_CLASSES)]
 optimized_alloc = [env.means[j][chosen_arms[j]] for j in range(0, N_CLASSES)]
@@ -136,4 +159,3 @@ plt.plot(a, 'b')
 plt.plot(b, 'k--')
 plt.legend(["Algorithm", "Optimal"])
 plt.show()
-

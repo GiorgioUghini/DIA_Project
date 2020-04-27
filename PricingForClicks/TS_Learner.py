@@ -14,6 +14,10 @@ class TS_Learner(Learner):
         idx = np.argmax(np.random.beta(self.beta_parameters[:, 0], self.beta_parameters[:, 1]) * self.arms[:, 0])
         return idx
 
+    def sample_values(self):
+        probabilities = np.random.beta(self.beta_parameters[:, 0], self.beta_parameters[:, 1])
+        return probabilities
+
     def update(self, pulled_arm, successes, failures):
         self.beta_parameters[pulled_arm, 0] += successes
         self.beta_parameters[pulled_arm, 1] += failures

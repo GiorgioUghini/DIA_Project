@@ -35,6 +35,8 @@ class MainEnvironment():
                 tmp_prb.append([pr_maxPrice[q], demand(q, pr_maxPrice)])
             self.pr_probabilities.append(np.array(tmp_prb))
 
+        self.pr_means = [demand(userType, self.pr_probabilities[userType][:, 0]) for userType in range(0, self.N_USERS)]
+
     def round_budget(self, pulled_arm, userType):
         mean = self.means[userType][pulled_arm]
         # We are supposing same variance among all userType:
