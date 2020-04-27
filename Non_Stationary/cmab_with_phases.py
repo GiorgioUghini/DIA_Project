@@ -9,13 +9,13 @@ import csv
 
 # Assumption: Static min/max budget allocation for all three phases
 N_CLASSES = 3
-N_EXPERIMENTS = 40
+N_EXPERIMENTS = 10
 TIME_SPAN = 120  # TIME_SPAN should be a multiple of env.N_PHASES or not all phases wil have same length
 min_budgets = [10, 10, 10]
 max_budgets = [70, 80, 60]
 step = 2
 total_budget = 110
-WINDOW_SIZE = int(1.2 * np.sqrt(TIME_SPAN * np.log10(TIME_SPAN)))  #  4 * sqrt(T log(T)) is like 122 for 364 days
+WINDOW_SIZE = int(4 * np.power(TIME_SPAN * np.log(TIME_SPAN), 0.25))  #  4 * quadroot(T log(T))
 sigma = 200
 
 budgets_j = [np.arange(min_budgets[v], max_budgets[v] + 1, step) for v in range(0, N_CLASSES) ]      # +1 to max_budget because range does not include the right extreme of the interval by default

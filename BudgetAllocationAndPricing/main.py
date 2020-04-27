@@ -10,7 +10,7 @@ from datetime import datetime
 
 TIME_SPAN = 50
 N_CLASSES = 3
-N_EXPERIMENTS = 50
+N_EXPERIMENTS = 1
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
@@ -108,9 +108,9 @@ secondStageRows = []
 for j in range(0, N_CLASSES):
     colNum = pr_n_arms
     rowNum = int(np.floor_divide(total_budget, step) + 1)
-    bdg_sampled_values = np.atleast_2d(env.means[j]).T
-    pr_sampled_values = np.atleast_2d(env.pr_means[j])
-    matrix = bdg_sampled_values * pr_sampled_values
+    bdg_real_values = np.atleast_2d(env.means[j]).T
+    pr_real_values = np.atleast_2d(env.pr_means[j])
+    matrix = bdg_real_values * pr_real_values
     secondStageRows.append(np.amax(matrix, axis=1))  # remove dependency of price: sum along rows
 # Create SECOND matrix for the optimization process
 colNum = rowNum  # that is, int(np.floor_divide(total_budget, step) + 1)
