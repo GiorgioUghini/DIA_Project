@@ -14,6 +14,9 @@ class TS_Learner(Learner):
         idx = np.argmax(np.random.beta(self.beta_parameters[:, 0], self.beta_parameters[:, 1]) * self.arms[:, 0])
         return idx
 
+    def get_conversion_rate(self, arm):
+        return np.random.beta(self.beta_parameters[arm, 0], self.beta_parameters[arm, 1])
+
     def sample_values(self):
         probabilities = np.random.beta(self.beta_parameters[:, 0], self.beta_parameters[:, 1])
         return probabilities
