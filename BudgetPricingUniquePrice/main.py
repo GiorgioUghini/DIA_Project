@@ -29,6 +29,11 @@ pr_n_arms = 6  # Non cambiare, è per fare venire il grafico zoommato nei primi 
 pr_maxPrice = [400, 400, 400]
 pr_minPrice = [100, 100, 100]
 
+timestamp = str(datetime.timestamp(datetime.now()))
+writeFile = open("data-%s.csv" % timestamp, "w")
+writer = csv.writer(writeFile)
+writer.writerow(["e", "t", "price", "sampled prices", "conv rates", "expected revenues", "budgets", "real clicks", "real buys"])
+
 for e in range(0, N_EXPERIMENTS):
     # environment
     env = MainEnvironment(budgets_list=budgets_j, sigma=sigma,
@@ -58,9 +63,9 @@ for e in range(0, N_EXPERIMENTS):
             #estimate the values per click, one for each budget of each class
             values_per_click = []
             for i in range(0, N_CLASSES):
-                p = sampled_prices[i]
+                p = sampled_prices[j]
                 c = clicks[i]
-                conv_rate = conversion_rates[i]
+                conv_rate = conversion_rates[j]
                 budgets = gpts_learners[i].arms
                 values_per_click.append((p * c * conv_rate - budgets) / c)
 
@@ -92,9 +97,13 @@ for e in range(0, N_EXPERIMENTS):
 
         # test with environment
         daily_revenue = 0
+        real_clicks_list = []
+        real_buys_list = []
         for i in range(0, N_CLASSES):
             real_clicks = int(env.round_budget(best_budget_arms[i], i))
+            real_clicks_list.append(real_clicks)
             real_buys = env.round_pricing(best_price_arm, real_clicks, i)
+            real_buys_list.append(real_buys)
             daily_revenue += real_buys * best_price
             # and update learners
             gpts_learners[i].update(best_budget_arms[i], real_clicks)
@@ -103,6 +112,7 @@ for e in range(0, N_EXPERIMENTS):
 
         # Append the revenue of this day to the array for this experiment
         experiment_revenues.append(daily_revenue)
+        writer.writerow([e, t, best_price, sampled_prices, conversion_rates[best_TS_learner], expected_revenues, chosen_budgets[best_TS_learner], real_clicks_list, real_buys_list])
 
         if t % 10 == 0:
             timestampStr = datetime.now().strftime("%H:%M:%S")
@@ -112,6 +122,7 @@ for e in range(0, N_EXPERIMENTS):
     # Append the array of revenues of this experiment to the main one, for statistical purposes
     per_experiment_revenues.append(experiment_revenues)
 
+writeFile.close()
 
 # Compute the REAL optimum allocation by solving the optimization problem with the real values for all prices and then get the best reward
 rewards_per_price = []
