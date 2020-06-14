@@ -9,6 +9,7 @@ class CMABOptimizer():
             self.budgets = [i for i in range(0, int(max_budget), step)]
         self.campaigns_number = campaigns_number
         self.step = step
+        self.best_revenue = 0
 
     def optimize(self, matrix):
         array_old = np.zeros(matrix.shape[1])
@@ -29,5 +30,6 @@ class CMABOptimizer():
             array_old = array_next
             array_next = np.zeros(int(matrix.shape[1]))
             budget_assigned_old = budget_assigned_new.copy()
+        self.best_revenue = np.max(array_old)
         chosen_budget = budget_assigned_new[int(np.argmax(array_old))]
         return chosen_budget      # If using integer step this can be done
