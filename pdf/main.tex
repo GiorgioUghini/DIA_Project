@@ -7,6 +7,10 @@
 \usepackage{listings}
 \usepackage{enumitem}
 \usepackage{marvosym}
+\usepackage{lmodern,textcomp}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 
 \hypersetup{pdftitle={Princing And Advertising},
 	pdfauthor={Andrea Furlan, Cosimo Russo, Giorgio Ughini},        
@@ -50,8 +54,16 @@
 	\input{sections/subcampaigns}
 	\subsection{The Abrupt Phases}
 	\input{sections/phases}
-	\section{Algorithms}
-	\subsection{Combinatorial Bandit Algorithm}
+	\section{Case study and Algorithms}
+	\subsection{Budget allocation with only one phase}
+	\input{sections/firstcontext}
+	\subsubsection{Experiment setting}
+	\input{sections/firstsetting}
+	\subsubsection{Gaussian Process Combinatorial Multi-armed Bandit}
+	\input{sections/cmab}
+	\subsubsection{Results}
+	\input{sections/firstresults}
+	
 	\subsection{Sliding-Window Combinatorial Bandit Algorithm}
 	\subsection{Learning Algorithm for Pricing}
 	\subsection{Context Generator Algorithm}

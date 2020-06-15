@@ -1,0 +1,19 @@
+The first step of the process is the definition of the size of the experiments, in particular:
+\begin{itemize}
+	\item \textbf{The number of arms}:\@  the higher it is, the more likely is the chance of exploring
+	arms that are close to the optimal arm. On the other hand, having more arms
+	implies that the optimization horizon will be required to be longer to allow a
+	proper exploration of all the arms.
+	\item \textbf{The optimization horizon}:\@  this is the amount of time that will be spent
+	running the price optimization algorithms. The longer this is, the more are
+	the possibilities that can be explored. However, exploring more possibilities
+	causes to have a bigger loss - or regret - in the initial phases of the exploration.
+\end{itemize} 
+It appears clear that the the two quantities depend one on each other
+and represent the key of the optimization. A reasonable optimization horizon is
+one year. Indeed, the interest that people have for our product behaves in the same way every
+year, the phases alternate cyclically and the period of the cycle is one year.
+Thus, as long as we are able to collect enough data during one year, it makes no
+sense to extend the optimization horizon to a time that is longer than this.
+The choice of the number of arms is an hyper-parameter that the corporate should input, by setting the minimum budget to allocate to each subcampaign ($min-budget$), the maximum one ($max-budgets$) and the granularity ($step$).
+\\For our experiment, we set the same minimum budget for all subcampaign (\texteuro1000) but different upper bound as we consider the company to have (very low) prior information about their classes on user. The upper bound for the budget is then set to \texteuro5400, \texteuro5800 and \texteuro5200 for the three categories of users, reflecting the fact that the company can afford to spend more for his top spending users.
