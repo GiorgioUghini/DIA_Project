@@ -50,18 +50,21 @@ for e in range(0, N_EXPERIMENTS):
         best_values_per_click.append(utils.getDemandCurve(c, best_prices[c]) * best_prices[c])
 
     for t in range(0, TIME_SPAN):
+        pricing_pulled_arms = [pr_ts_learners[j].pull_arm() for j in range(N_CLASSES)]
+
         # Start optimization data structure creation
         secondStageRows = []
         # Create FIRST matrix by sampling pricing and budget
         for j in range(0, N_CLASSES):
             colNum = pr_n_arms
-            rowNum = int(np.floor_divide(total_budget, step) + 1)
-            bdg_sampled_values = np.atleast_2d(gpts_learners[j].sample_values()).T
-            pr_sampled_values = np.atleast_2d(pr_ts_learners[j].sample_values())
-            matrix = bdg_sampled_values * pr_sampled_values  # valPerClick * clicks(budget)
-            secondStageRows.append(np.amax(matrix, axis=1))  # remove dependency of price: sum along rows
+            price = pr_ts_learners[j].arms[pricing_pulled_arms[j]][0]
+            conversion_rate = pr_ts_learners[j].get_conversion_rate(pricing_pulled_arms[j])
+            clicks = gpts_learners[j].sample_values()
+            budgets = gpts_learners[j].arms
+            values_per_click = (price * clicks * conversion_rate - budgets) / clicks
+            secondStageRows.append(values_per_click * clicks)
         # Create SECOND matrix for the optimization process
-        colNum = rowNum  # that is, int(np.floor_divide(total_budget, step) + 1)
+        colNum = int(np.floor_divide(total_budget, step) + 1)  # that is, int(np.floor_divide(total_budget, step) + 1)
         base_matrix = np.ones((N_CLASSES, colNum)) * np.NINF
         for j in range(0, N_CLASSES):
             sampled_values = secondStageRows[j]  # Row obtained in the first step maximizing elements
@@ -82,7 +85,7 @@ for e in range(0, N_EXPERIMENTS):
 
             # Pricing: problem can be decomposed. The optimal solution is the union
             # of the three optimal sub-solution as the seller can set a different price
-            pulled_arm = pr_ts_learners[j].pull_arm()
+            pulled_arm = pricing_pulled_arms[j]
             successes = env.round_pricing(pulled_arm, clicks, j)    # Successful clicks with current budget
             failures = clicks - successes
             pr_ts_learners[j].update(pulled_arm, successes, failures)
@@ -100,20 +103,20 @@ for e in range(0, N_EXPERIMENTS):
     # Append the array of revenues of this experiment to the main one, for statistical purposes
     per_experiment_revenues.append(experiment_revenues)
 
+print("Max revenue: %f" % np.max(per_experiment_revenues))
+
 
 # Compute the REAL optimum allocation by solving the optimization problem with the real values
-
 secondStageRows = []
 # Create FIRST matrix by sampling pricing and budget
 for j in range(0, N_CLASSES):
+    demand_curve = demand(j, best_prices[j])
     colNum = pr_n_arms
-    rowNum = int(np.floor_divide(total_budget, step) + 1)
-    bdg_real_values = np.atleast_2d(env.means[j]).T
-    pr_real_values = np.atleast_2d(env.pr_means[j])
-    matrix = bdg_real_values * pr_real_values
-    secondStageRows.append(np.amax(matrix, axis=1))  # remove dependency of price: sum along rows
+    clicks = env.means[j]
+    values_per_click = (best_prices[j] * clicks * demand_curve - budgets_j[j]) / clicks
+    secondStageRows.append(values_per_click * clicks)  # remove dependency of price: sum along rows
 # Create SECOND matrix for the optimization process
-colNum = rowNum  # that is, int(np.floor_divide(total_budget, step) + 1)
+colNum = int(np.floor_divide(total_budget, step) + 1)  # that is, int(np.floor_divide(total_budget, step) + 1)
 base_matrix = np.ones((N_CLASSES, colNum)) * np.NINF
 for j in range(0, N_CLASSES):
     sampled_values = secondStageRows[j]  # Row obtained in the first step maximizing elements
