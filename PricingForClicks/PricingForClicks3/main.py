@@ -2,8 +2,7 @@ import matplotlib.pyplot as plt
 from PricingForClicks.PricingForClicks3.Environment import *
 from PricingForClicks.PricingForClicks3.TS_Learner import *
 from PricingForClicks.PricingForClicks3.UCB1_Learner import *
-import utils, math
-from scipy.stats import beta, norm
+import utils
 
 # avg number of clicks per day, taken from the best budget allocation of the previous point
 B = np.array([1800, 12000, 350])
@@ -23,7 +22,7 @@ best_ucb1_params = []  # parameters for the optimal number of arms
 
 print("Optimal number of arms: %d" % best_n_arms)
 
-n_experiments = 500
+n_experiments = 10000
 n_arms_arr = range(4, 10) if multi_arms else [best_n_arms]
 
 max_regret_per_arm = []
