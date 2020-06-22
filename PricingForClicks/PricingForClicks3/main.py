@@ -18,7 +18,6 @@ demand = [lambda t, c=c: utils.getDemandCurve(c, t) for c in CLASSES]
 clicks = [np.round(np.random.normal(b, var, T)) for b in B]  # num of users who clicked the ads on each day
 
 best_n_arms = math.ceil((T * np.log10(T)) ** 0.25)  # the optimal number of arms
-best_n_arms = 20
 best_beta_params = []  # beta parameters of the optimal number of arms
 best_ucb1_params = []  # parameters for the optimal number of arms
 
