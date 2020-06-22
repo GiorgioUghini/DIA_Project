@@ -6,26 +6,34 @@ import utils, math
 from scipy.stats import beta, norm
 
 # avg number of clicks per day, taken from the best budget allocation of the previous point
-B = [1800, 12000, 350]
-var = 20  # variance in number of clicks per day
-T = 30  # number of days
-multi_arms = False
+B = np.array([1800, 12000, 350])
+var = B / 4  # variance in number of clicks per day
+T = 45  # number of days
+multi_arms = True
 N_CLASSES = 3
 CLASSES = range(N_CLASSES)
 
 demand = [lambda t, c=c: utils.getDemandCurve(c, t) for c in CLASSES]
 
-clicks = [np.round(np.random.normal(b, var, T)) for b in B]  # num of users who clicked the ads on each day
+clicks = [np.round(np.random.normal(B[c], var[c], T)) for c in CLASSES]  # num of users who clicked the ads on each day
 
-best_n_arms = math.ceil((T * np.log10(T)) ** 0.25)  # the optimal number of arms
+best_n_arms = 4  # math.ceil((T * np.log10(T)) ** 0.25)  # the optimal number of arms
 best_beta_params = []  # beta parameters of the optimal number of arms
 best_ucb1_params = []  # parameters for the optimal number of arms
 
 print("Optimal number of arms: %d" % best_n_arms)
 
-n_experiments = 100
-n_arms_arr = range(best_n_arms-3, best_n_arms + 4) if multi_arms else [best_n_arms]
+n_experiments = 500
+n_arms_arr = range(4, 10) if multi_arms else [best_n_arms]
 
+max_regret_per_arm = []
+
+x = np.arange(0, 400, 1)
+real_best_prices = [np.argmax(demand[c](x) * x) for c in CLASSES]
+real_optimum = [demand[c](real_best_prices[c]) * real_best_prices[c] * clicks[c] for c in CLASSES]
+
+ts_regret_per_arm = []
+ucb1_regret_per_arm = []
 for n_arms in n_arms_arr:
     print(n_arms, "arms")
     ts_env = [Environment(n_arms=n_arms, demandCurve=demand[c], minPrice=0, maxPrice=400) for c in CLASSES]
@@ -53,9 +61,8 @@ for n_arms in n_arms_arr:
                 successes = ts_env[userType].round(pulled_arm, clicks[userType][t])
                 failures = clicks[userType][t] - successes
                 ts_learners[userType].update(pulled_arm, successes, failures)
-                best_hope = optimum[userType][t]
                 actual_value = successes*ts_env[userType].probabilities[pulled_arm][0]
-                regret = best_hope - actual_value
+                regret = real_optimum[userType][t] - actual_value
                 ts_regret_per_class.append(regret)
 
                 # UCB1 Learner
@@ -63,9 +70,8 @@ for n_arms in n_arms_arr:
                 successes = ucb1_env[userType].round(pulled_arm, clicks[userType][t])
                 failures = clicks[userType][t] - successes
                 ucb1_learners[userType].update(pulled_arm, successes, failures)
-                best_hope = optimum[userType][t]
                 actual_value = successes * ucb1_env[userType].probabilities[pulled_arm, 0]
-                regret = best_hope - actual_value
+                regret = real_optimum[userType][t] - actual_value
                 ucb1_regret_per_class.append(regret)
 
             ts_regret.append(ts_regret_per_class)
@@ -78,45 +84,28 @@ for n_arms in n_arms_arr:
         best_beta_params = [ts_learners[userType].beta_parameters for userType in CLASSES]
         best_ucb1_params = [ucb1_learners[userType].results_per_arm for userType in CLASSES]
 
-    plt.figure(0)
-    plt.plot(np.cumsum(np.mean(np.sum(all_ts_regret, axis=2), axis=0)))
-    plt.figure(1)
-    plt.plot(np.cumsum(np.mean(np.sum(all_ucb1_regret, axis=2), axis=0)))
+    ts_regret = np.cumsum(np.mean(np.sum(all_ts_regret, axis=2), axis=0))
+    max_regret_per_arm.append(ts_regret[len(ts_regret)-1])
+    ts_regret_per_arm.append(ts_regret)
+    ucb1_regret_per_arm.append(np.cumsum(np.mean(np.sum(all_ucb1_regret, axis=2), axis=0)))
+
+
+tmp = np.argsort(max_regret_per_arm) + 4
+print("regrets per arm: %s" % str(np.sort(max_regret_per_arm)))
+print("Sorted arms: %s" % str(tmp))
+print("With %d arms we have the smallest regret: %d" % (4 + np.argmin(max_regret_per_arm), int(np.min(max_regret_per_arm))))
 
 plt.figure(0)
+for n in range(len(n_arms_arr)):
+    plt.plot(ts_regret_per_arm[n])
 plt.legend(n_arms_arr)
 plt.xlabel("T")
 plt.ylabel("Regret[€], TS")
 plt.show()
 plt.figure(1)
+for n in range(len(n_arms_arr)):
+    plt.plot(ucb1_regret_per_arm[n])
 plt.legend(n_arms_arr)
 plt.xlabel("T")
 plt.ylabel("Regret[€], UCB1")
 plt.show()
-
-x = np.arange(0, 1, 0.01)
-for c in CLASSES:
-    plt.figure(2 + c)
-    for i in range(best_n_arms):
-        [a, b] = best_beta_params[c][i]
-        y = beta.pdf(x, a, b)
-        plt.plot(x, y)
-
-    plt.legend(range(best_n_arms))
-    plt.xlabel("")
-    plt.ylabel("beta distribution of arms for class %d" % c)
-    plt.show()
-
-
-for c in CLASSES:
-    plt.figure(2 + N_CLASSES + c)
-    for i in range(best_n_arms):
-        (avg, n, price) = best_ucb1_params[c][i]
-        if not price == 0:
-            sigma = ucb1_learners[c].calc_upper_bound((avg, n, price)) / price - avg
-            y = norm.pdf(x, avg, sigma)
-            plt.plot(x, y)
-
-    plt.ylabel("UCB1 average and upper bound for class %d" % c)
-    plt.legend(range(best_n_arms))
-    plt.show()
