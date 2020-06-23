@@ -45,3 +45,11 @@ Some remarks:
     \item on line 6, to draw a price means that for each arm $a$ we pull a sample $\theta_a$ from the beta distribution of each arm, and then return the price $p_a$ of the arm that offers the best reward, calculated as $p_a = \underset{p_a}{argmax} \{p_a * \theta_a\}$
     \item on line 11 the update of the TS learner consists in updating the beta parameters of the arm pulled, in the followind way: $(\alpha, \beta) += (successes, failures)$
 \end{itemize}
+
+\subsubsection{Choice of the best arm}
+The following results come from averaging over 1000 experiments.
+
+We tested the experiment with several of arms. For each number $n$ of arms, we divide the price interval (that is always from 0 to 400) into $n$
+
+The first image shows the cumulative regret using different arms, ranging from 4 to 10.
+Given the limited time-span, the best result is provided by a low number of arms 
