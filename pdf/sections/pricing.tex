@@ -1,0 +1,47 @@
+In this section, we describe the learning algorithm that we used to maximize the number of purchases made by users that have reached our website by clicking on ads.
+
+\subsubsection{Assumptions}
+\begin{enumerate}
+    \item There is only one phase
+    \item The allocation of the budget over the three subcampaigns is fixed
+\end{enumerate}
+
+\subsubsection{Setup of the experiment}
+3 Thompson Sampling learners are used, one for each class of users. Since the users arrived on the purchase page by clicking on the ads, we assume that we can differentiate them by their class.
+
+To satisfy assumption (1), the algorithm runs for a limited number of days, 45, enough to provide a significant result.
+
+The average number of users that arrive per day are taken from the results of the previous point, which optimizes the budget in the fourth phase and maximizes the number of clicks. It returns the following average number of daily clicks: [1800, 12000, 350], and these are used as an average for all days of this point.
+
+Since the optimization of the budget is made once a day and depends on the price chosen, also the price (for each class of users) is chosen once per day.
+
+The minimum and maximum prices (0, 400) are the same for all the classes of users. The same goes for the number of arms, for we tested various configurations ranging from 4 to 10 arms to see which one provided the best result.
+
+\subsubsection{The algorithm}
+
+The high-level pseudo code of the algorithm is as follows
+
+\begin{algorithm}
+	\caption{TS learners for pricing}
+	\begin{algorithmic}[1]
+        \STATE $J\gets ${ all classes of users}
+        \STATE $T\gets ${ 45 days }
+        \STATE $regret\gets ${0}
+        \FOR{$day \in T $}
+		\FOR{$j \in \{1,...,J\}$}
+		\STATE $price\gets ${Draw a price from the j-th TS learner}
+        \STATE $successes\gets ${number of buys with pulled price}
+        \STATE $failures\gets ${clicks[j][day] - successes}
+        \STATE $reward\gets ${successes * price}
+        \STATE regret += optimum - reward
+        \STATE TS[j].update(pulledArm, successes, failures)
+        \ENDFOR
+        \ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+
+Some remarks:
+\begin{itemize}
+    \item on line 6, to draw a price means that for each arm $a$ we pull a sample $\theta_a$ from the beta distribution of each arm, and then return the price $p_a$ of the arm that offers the best reward, calculated as $p_a = \underset{p_a}{argmax} \{p_a * \theta_a\}$
+    \item on line 11 the update of the TS learner consists in updating the beta parameters of the arm pulled, in the followind way: $(\alpha, \beta) += (successes, failures)$
+\end{itemize}
