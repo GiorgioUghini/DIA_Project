@@ -1,3 +1,5 @@
+\newcommand{\pluseq}{\mathrel{+}=}
+
 In this section, we describe the learning algorithm that we used to maximize the number of purchases made by users that have reached our website by clicking on ads.
 
 \subsubsection{Assumptions}
@@ -44,8 +46,8 @@ Each TS learner is responsible for a class of users. Each day, the 3 learners pu
 
 Some remarks:
 \begin{itemize}
-    \item on line 6, to draw a price means that for each arm $a$ we pull a sample $\theta_a$ from the beta distribution, and then return the price $p_a$ of the arm that offers the best reward, that is $p_a = \underset{p_a}{argmax} \{p_a * \theta_a\}$
-    \item on line 11 the update of the TS learner consists in updating the beta parameters of the arm pulled, in the following way: $(\alpha, \beta) += (successes, failures)$
+    \item on line 6, to draw a price means that for each arm $a$ we pull a sample $\theta_a$ from the beta distributions, and then return the price $p_a$ of the arm that offers the best reward, that is $p_a = \underset{p_a}{argmax} \{p_a * \theta_a\}$
+    \item on line 11 the update of the TS learner consists in updating the beta parameters of the arm pulled $\bar{a}$, in the following way: $(\alpha, \beta)_{\bar{a}} \pluseq (successes, failures)$
 \end{itemize}
 
 \subsubsection{Choice of the best arm}
@@ -53,18 +55,15 @@ The following results come from averaging over 1000 experiments.
 
 We tested the experiment with several numbers of arms. For each number $n$ of arms, draw the $n$ prices equally spaced in the interval and run the experiment, calculate the regret and the reward and use them to choose the best number of arms.
 
-The first image shows the cumulative regret using different arms, ranging from 3 to 7.
+\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{sections/images/pricing_regret.png}}
+
+The first image shows the cumulative regret using different numbers of arms, ranging from 3 to 7.
 Given the limited time-span, the best result is provided by a low number of arms, which converges more rapidly to the best arm.
 
 However, since in the calculus of the regret we use as clairvoyant the best possible arm, we know how fast the learner converges but not how much money we would be losing in the ideal case in which we could use an infinite number of arms. For this reason, we set up another experiment in which we calculate the reward and compare it with the clairvoyant reward that, in this case, corresponds with the reward that we would get if we chose, for each class, its actual best price.
 
-\begin{figure}[]
-    \centering
-    
-    \caption{Reward of the TS Learner}
-    \label{Reward of the TS Learner}
-\end{figure}
-
+\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{sections/images/pricing_reward.png}}
+\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{sections/images/pricing_cumulative_reward.png}}
 As the image shows, using 3 arms does not offer a good reward. The best number of arms that comes out from our experiment is 4, which is aligned with the theoretical expection that we have with a period of 45 days.
 
 \subsubsection{Results}

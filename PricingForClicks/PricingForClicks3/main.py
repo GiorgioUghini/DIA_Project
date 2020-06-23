@@ -22,7 +22,7 @@ print("Optimal number of arms: %d" % best_n_arms)
 
 n_experiments = 1000
 MIN_N_ARMS = 3
-MAX_N_ARMS = 15
+MAX_N_ARMS = 9
 n_arms_arr = list(range(MIN_N_ARMS, MAX_N_ARMS)) if multi_arms else [best_n_arms]
 
 max_regret_per_arm = []
