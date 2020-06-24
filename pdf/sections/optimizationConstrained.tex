@@ -70,3 +70,19 @@ Some remarks:
     \item In the final part the TS and GPTS learners are updated. In particular, the c-th GPTS takes the number of clicks that the c-th subcampaign received and uses them to update the model on its pulled arm.
     Instead, each TS learner is updated on the same arm $\bar{p}$ but with different inputs: the c-th TS learner updates its arm $\bar{p}$ with the number of buys $\bar{b_c}$ that come from the c-th subcampaign as successes, and $\bar{c_c} - \bar{b_c}$ as the number of failures
 \end{itemize}
+
+\subsubsection{Results}
+After running the algorithm for 50 days with 1000 experiments, we obtained the regret shown in figure \ref{fig:opt_constrained_regret}.
+As in the previous points, this regret refers to the best arms, and it represents how fast the algorithm converges to the best solution.
+
+\begin{figure}
+    \caption{Cumulative regret}
+    \label{fig:opt_constrained_regret}
+    \includegraphics[width=0.85\textwidth]{sections/images/opt_constrained_regret.jpg}
+\end{figure}
+
+\begin{figure}
+    \caption{Reward}
+    \label{fig:opt_constrained_reward}
+    \includegraphics[width=0.85\textwidth]{sections/images/opt_constrained_reward.jpg}
+\end{figure}
