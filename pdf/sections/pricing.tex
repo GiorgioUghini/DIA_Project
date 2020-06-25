@@ -9,7 +9,7 @@ In this section, we describe the learning algorithm that we used to maximize the
 \end{enumerate}
 
 \subsubsection{Setup of the experiment}
-3 Thompson Sampling learners are used, one for each class of users. Since the users arrive on the purchase page by clicking on the ads, we assume that we can differentiate them by their class, thus proposing a different price to each user.
+Three Thompson Sampling learners are used, one for each class of users. Since the users arrive on the purchase page by clicking on the ads, we assume that we can differentiate them by their class, thus proposing a different price to each user.
 
 To satisfy assumption (1), the algorithm runs for a limited number of days, 45, enough to provide a significant result.
 
@@ -60,9 +60,8 @@ We tested the experiment with several numbers of arms. For each number $n$ of ar
 The first image shows the cumulative regret using different numbers of arms, ranging from 3 to 7.
 Given the limited time-span, the best result is provided by a low number of arms, which converges more rapidly to the best arm.
 
-However, since in the calculus of the regret we use as clairvoyant the best possible arm, we know how fast the learner converges but not how much money we would be losing in the ideal case in which we could use an infinite number of arms. For this reason, we set up another experiment in which we calculate the reward and compare it with the clairvoyant reward that, in this case, corresponds with the reward that we would get if we chose, for each class, its actual best price.
+However, since in the calculus of the regret we use a discretized clairvoyant algorithm with the same level of discretization of every experiment, we know how fast the learner converges but not how much money we would be losing in the ideal case in which we could use an infinite number of arms. For this reason, we set up another experiment in which we calculate the reward and compare it with the full clairvoyant reward that, in this case, corresponds with the reward that we would get if we chose, for each class, its actual best price without any discretization.
 
-\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{sections/images/pricing_reward.png}}
 \makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{sections/images/pricing_cumulative_reward.png}}
 As the image shows, using 3 arms does not offer a good reward. The best number of arms that comes out from our experiment is 4, which is aligned with the theoretical expection that we have with a period of 45 days.
 

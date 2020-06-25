@@ -10,7 +10,7 @@ from datetime import datetime
 
 TIME_SPAN = 50
 N_CLASSES = 3
-N_EXPERIMENTS = 1
+N_EXPERIMENTS = 100
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
