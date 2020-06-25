@@ -10,7 +10,7 @@ from datetime import datetime
 
 TIME_SPAN = 50
 N_CLASSES = 3
-N_EXPERIMENTS = 10
+N_EXPERIMENTS = 1
 
 min_budgets = [10, 10, 10]
 max_budgets = [54, 58, 52]
@@ -29,10 +29,10 @@ pr_n_arms = 6  # Non cambiare, è per fare venire il grafico zoommato nei primi 
 pr_maxPrice = [400, 400, 400]
 pr_minPrice = [100, 100, 100]
 
-timestamp = str(datetime.timestamp(datetime.now()))
+timestamp = str(datetime.now())
 writeFile = open("data-%s.csv" % timestamp, "w")
 writer = csv.writer(writeFile)
-writer.writerow(["e", "t", "price", "sampled prices", "conv rates", "expected revenues", "budgets", "real clicks", "real buys"])
+writer.writerow(["e", "t", "price", "sampled prices", "conv rates", "expected revenues", "budgets", "real clicks", "real buys", "real_revenue"])
 
 for e in range(0, N_EXPERIMENTS):
     # environment
@@ -112,7 +112,7 @@ for e in range(0, N_EXPERIMENTS):
 
         # Append the revenue of this day to the array for this experiment
         experiment_revenues.append(daily_revenue)
-        writer.writerow([e, t, best_price, sampled_prices, conversion_rates[best_TS_learner], expected_revenues, chosen_budgets[best_TS_learner], real_clicks_list, real_buys_list])
+        writer.writerow([e, t, best_price, sampled_prices, conversion_rates[best_TS_learner], expected_revenues, chosen_budgets[best_TS_learner], real_clicks_list, real_buys_list, daily_revenue])
 
         if t % 10 == 0:
             timestampStr = datetime.now().strftime("%H:%M:%S")
@@ -164,6 +164,7 @@ with open(timestamp + "-optimal-rew.csv", "w") as writeFile:
     writer.writerow(cla_rew)
 writeFile.close()
 
+timestamp = str(datetime.now())
 # Print aggregated results
 aggr_optimal_revenue = np.sum(optimized_revenue)
 aggr_rewards = np.mean(per_experiment_revenues, axis=0)
@@ -174,14 +175,18 @@ a = aggr_optimal_revenue - aggr_rewards
 c = np.cumsum(a)
 plt.plot(c, 'r')
 plt.legend(["Budget + Pricing"])
+if N_EXPERIMENTS > 10:
+    plt.savefig("regret-%s.png" % timestamp)
 plt.show()
 
 plt.figure(1)
-plt.ylabel("Revenue")
+plt.ylabel("Reward")
 plt.xlabel("time")
 a = aggr_rewards
 b = aggr_optimal_revenue * np.ones(len(aggr_rewards))
 plt.plot(a, 'b')
 plt.plot(b, 'k--')
 plt.legend(["Algorithm", "Optimal"])
+if N_EXPERIMENTS > 10:
+    plt.savefig("reward-%s.png" % timestamp)
 plt.show()
