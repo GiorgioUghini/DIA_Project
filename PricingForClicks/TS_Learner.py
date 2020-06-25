@@ -1,5 +1,4 @@
 from PricingForClicks.Learner import *
-from matplotlib import pyplot
 
 
 class TS_Learner(Learner):
