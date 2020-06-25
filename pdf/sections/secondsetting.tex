@@ -9,14 +9,14 @@ reasonable sliding window length, which pros and cons are reported below:
 	$$SW_1 = \sqrt{T}$$
 	It is a very simple formula, altough with large numbers of arms it leads to bad performances, as it does not take it into account.
 	
-	\item \textbf{Some environment knowelge}:\@  Provided that all the phases of the demand curve have the same length so that they are uniformly distributed over the time horizon, we’re setting the sliding window size equal to this length, in
-	order to start re-exploring the "old" arms in correspondence of the beginning
-	of a new phase.
-	$$SW_2 = T/F$$
-	This is a very simple formula, tailored for a specific case, but the phases should be uniformly distributed over the time horizon
+	\item \textbf{Some environment knowelge}:\@  Provided that all the phases of the demand curve have the same length so that they are uniformly distributed over the time horizon, we’re setting the sliding window size equal to a third of this length, in 	order to keep re-exploring the "old" arms at least 2 time inside the same phase but to be more ready in case of a abrupt change (like in correspondence of the beginning
+	of a new phase).
+	$$SW_2 = \dfrac{T}{3F}$$
+	This is a very simple formula, tailored for a specific case, the phases should be uniformly distributed over the time horizon
 	and their lengths have to be equal, which is not always the case.	
 \end{itemize} 
 
 We supposed that the compay could have a small prior information about the distribution of the phase that could come from previous campaign analisys or other sources.
 \\As the phases are uniformly distributed and we know the number of it and the optimization horizon, we implemented the second formula for the Sliding Window lenght that resulted in:
-$$SW = 365/4 = 91 days$$
+$$SW = \dfrac{365}{4*3} = 1 month$$
+This is a reasonable amount of time as, provided the existance of 4 phases in a year, each phase would last 3 month and using this $SW$ time we're sure that after a month a new phase has begun, no more dirty data are considered.
