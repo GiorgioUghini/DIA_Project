@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, "..")
 import matplotlib.pyplot as plt
 from CMABOptimizer import *
 from Stationary.GPTS_Learner import *
@@ -67,7 +69,7 @@ for e in range(0, N_EXPERIMENTS):
                 c = clicks[i]
                 conv_rate = conversion_rates[j]
                 budgets = gpts_learners[i].arms
-                values_per_click.append((p * c * conv_rate - budgets * 1000) / c)
+                values_per_click.append((p * c * conv_rate - budgets) / c)
 
             # now we can solve the knapsack problem to find best allocation and expected revenue
             second_stage_rows = []
