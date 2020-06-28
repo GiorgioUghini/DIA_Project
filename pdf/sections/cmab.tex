@@ -4,11 +4,11 @@ The pseudo code of the algoritm we implemented is as follow.
 	\begin{algorithmic}[1]
 		\STATE $J\gets ${ all classes of users}
 		\FOR{$j \in \{1,...,J\}$}
-		\STATE Sample GP-Learner
+		\STATE Sample j-th GP-Learner
 		\STATE Add row to knapsack matrix
 		\ENDFOR
 		\STATE Optimize knapsack matrix
-		\STATE Play selected arm
-		\STATE Update GP-Learner model
+		\STATE Play selected superarm
+		\STATE Update GP-Learners model
 	\end{algorithmic}
 \end{algorithm}
