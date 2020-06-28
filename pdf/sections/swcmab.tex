@@ -5,12 +5,12 @@ The pseudo code of the algoritm we implemented is as follow.
 		\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 		\REQUIRE $\tau$ sliding window size, $J$ classes of users
 		\FOR{$j \in \{1,...,J\}$}
-		\STATE Sample GP-Learner($\tau$)
+		\STATE Sample j-th GP-Learner($\tau$)
 		\STATE Add row to knapsack matrix
 		\ENDFOR
 		\STATE Optimize knapsack matrix
-		\STATE Play selected arm
-		\STATE Update GP-Learner model($\tau$)
+		\STATE Play selected superarm
+		\STATE Update GP-Learners model($\tau$)
 	\end{algorithmic}
 \end{algorithm}
 \\The update of the GP-Learner's model performed at time $\tau$ is achieved by adding the collected reward to the reward space and then discarding the least element if the current time exceeds $\tau$.
