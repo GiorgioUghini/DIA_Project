@@ -58,3 +58,10 @@ def getDemandCurve(userType, t):
         return 0.42*(0.42*np.exp(-np.power(t - 180, 2.) / (2*np.power(90, 2.))) + 0.35*np.exp(-np.power(t - 85, 2.) / (2*np.power(120, 2.))))
     else:
         return getProbabilities(0)*getDemandCurve(0, t) + getProbabilities(1)*getDemandCurve(1, t) + getProbabilities(2)*getDemandCurve(2, t)
+
+
+def smooth(curve, box):
+    curve_s = np.zeros(len(curve))
+    for i in range(len(curve)):
+        curve_s[i] = np.mean(curve[max(0, int(i - box / 2)):min(len(curve), int(i + box / 2))])
+    return curve_s

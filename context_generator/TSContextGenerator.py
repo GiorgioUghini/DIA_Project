@@ -10,6 +10,8 @@ class TSContextGenerator:
         self.arms = arms
         self.success_fail_per_arm_per_user = [[[0, 0] for _ in range(len(probabilities_of_users))] for _ in range(len(arms))]
         self.regrets = []
+        self.rewards = []
+        self.clairs = []
         self.contexts = [Context([i for i in range(len(probabilities_of_users))])]
 
     def get_successes(self, arm, user_type):
@@ -44,6 +46,8 @@ class TSContextGenerator:
                 reward += context.get_arm_reward(self.probabilities_of_users, self, best_arm, self.arms)
 
             reward = min(reward, clairvoyant)
+            self.clairs.append(clairvoyant)
+            self.rewards.append(reward)
             self.regrets.append(clairvoyant - reward)
 
     def split(self):

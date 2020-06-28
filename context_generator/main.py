@@ -4,6 +4,8 @@ from context_generator.TSContextGenerator import *
 from datetime import datetime
 
 regret = []
+reward = []
+clair = []
 number_of_arms = 6
 number_of_experiments = 1
 number_of_clicks_per_day = 2000
@@ -26,11 +28,21 @@ for e in range(number_of_experiments):
             ts_context_generator.split()
 
     regret.append(ts_context_generator.regrets)
+    reward.append(ts_context_generator.rewards)
+    clair.append(ts_context_generator.clairs)
 
 plt.figure(0)
-plt.plot(np.cumsum(np.mean(regret, axis=0)),)
-plt.legend(["6 arms - TS"])
+plt.plot(np.cumsum(np.mean(regret, axis=0)))
+plt.legend(["4 arms - TS"])
 plt.xlabel("number of days")
 plt.ylabel("regret")
+plt.xticks(np.linspace(0, number_of_clicks_per_day*number_of_days, 8), np.linspace(0, number_of_days, 8, dtype=np.int32))
+plt.show()
+plt.figure(1)
+plt.plot(u.smooth(np.mean(reward, axis=0), 800))
+plt.plot(u.smooth(np.mean(clair, axis=0), 800))
+plt.legend(["reward", "clairvoyant"])
+plt.xlabel("number of days")
+plt.ylabel("reward")
 plt.xticks(np.linspace(0, number_of_clicks_per_day*number_of_days, 8), np.linspace(0, number_of_days, 8, dtype=np.int32))
 plt.show()
