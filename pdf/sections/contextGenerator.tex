@@ -4,9 +4,9 @@ The algorithm requires to define some inputs from which the context generation w
 \begin{itemize}
 	\item \textbf{The number of arms:} As stated in the chapter before, the number of arms that have a reasonably fast convergence to the best arm and enough arms to pull a price that is close enough to the clairvoyant are 4,5,6 or 7. In this scenario, the algorithm uses 6 arms.
 	\item \textbf{The number of clicks per day:} The more clicks per day on the ads, the more the algorithm will obtain a precise value, but the more it will require time to compute. We tried to choose a number as close as possible to what it could be a real number of users that click daily on ads like ours. We opted to 2000 clicks per day, and therefore whether or not it is convenient to split is checked every 14000 clicks.
-	\item \textbf{The time span of the experiment:} It is considered a time span of 140 days, that means that the check on the split is performed for a total of 20 times.
+	\item \textbf{The time span of the experiment:} It is considered a time span of 140 days (20 weeks), that means that the check on the split condition is performed for a total of 20 times.
 \end{itemize}
-Since the process involves some randomness and may require more than 140 days to converge, the splits can be done in different order and in different weeks, and the graphs shown as an output may differ. It is important to notice that since there are only 6 arms to explore, the splits always happen in the first weeks, while in a setting with more arms the splits can be performed later in time.
+Since the process involves some randomness, the splits can be done in different order and in different weeks, and the graphs shown as an output may differ. It is important to notice that since there are only 6 arms to explore, the splits always happen in the first weeks, while in a setting with more arms the splits can happen later in time.
 \subsubsection{The Algorithm}
 A pseudo code that describes how the algorithm works is this:\\
 
@@ -42,3 +42,9 @@ A pseudo code that describes how the algorithm works is this:\\
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
+\newpage
+\subsubsection{Results}
+After the 20 weeks period the graphs of the reward and the regret results as follow:\\
+\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{../curves/results/context_generator_2000clicksperday_reward}}
+\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{../curves/results/context_generator_2000clicksperday_regret}}
+By watching the clairvoyant plot, it is clear that the splits happened two times (expected since there are three class of users), the first one in the second week of the experiment, and the second one on the third week. \\The reward deviates more from the clairvoyant in the first weeks, when the splits still need to happen and influence the computations of the following weeks, and later converges to the clairvoyant, once the shift to the splitted scenario occurs. \\Complementary, the cumulative regret graph shows an exponential and more substantial growth in the first weeks, and later settles after the splits have influenced the reward.
