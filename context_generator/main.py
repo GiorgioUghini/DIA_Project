@@ -8,8 +8,8 @@ reward = []
 clair = []
 number_of_arms = 6
 number_of_experiments = 1
-number_of_clicks_per_day = 20
-number_of_days = 140
+number_of_clicks_per_day = 17000
+number_of_days = 90
 number_of_days_for_splitting = 7
 probabilities_of_users = [u.getProbabilities(0), u.getProbabilities(1), u.getProbabilities(2)]
 arms = np.array([100 + ((400-100)/number_of_arms) * i for i in range(number_of_arms)])
@@ -25,6 +25,7 @@ for e in range(number_of_experiments):
     for i in range(number_of_days):
         ts_context_generator.update_regret_after_day_passed(number_of_clicks_per_day)
         if i % number_of_days_for_splitting == 0 and i != 0:
+            print(i+1)
             ts_context_generator.split()
 
     regret.append(ts_context_generator.regrets)
@@ -33,7 +34,7 @@ for e in range(number_of_experiments):
 
 plt.figure(0)
 plt.plot(np.cumsum(np.mean(regret, axis=0)))
-plt.legend(["4 arms - TS"])
+plt.legend(["6 arms - TS"])
 plt.xlabel("number of days")
 plt.ylabel("cumulative regret")
 plt.xticks(np.linspace(0, number_of_clicks_per_day*number_of_days, 8), np.linspace(0, number_of_days, 8, dtype=np.int32))
