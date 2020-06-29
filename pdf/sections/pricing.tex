@@ -34,7 +34,7 @@ Each TS learner is responsible for a class of users. Each day, the 3 learners pu
         \FOR{$day \in T $}
 		\FOR{$j \in \{1,...,J\}$}
 		\STATE $price\gets ${Draw a price from the j-th TS learner}
-        \STATE $successes\gets ${number of buys with pulled price}
+        \STATE $successes\gets ${play the pulled arm}
         \STATE $failures\gets ${clicks[j][day] - successes}
         \STATE $reward\gets ${successes * price}
         \STATE regret += optimum - reward

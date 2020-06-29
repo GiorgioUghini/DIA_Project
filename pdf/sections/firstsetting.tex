@@ -11,12 +11,12 @@ The first step of the process is the definition of the size of the experiments, 
 \end{itemize} 
 It appears clear that the the two quantities depend one on each other
 and represent the key of the optimization. A reasonable optimization horizon is
-one year. Indeed, the interest that people have for our product behaves in the same way every
-year, the phases alternate cyclically and the period of the cycle is one year.
-Thus, as long as we are able to collect enough data during one year, it makes no
+three months. Indeed, the interest that people have for our product behaves in the same way every
+year in the same three months considered. The phases alternate cyclically and the period of the cycle is one year.
+Thus, as long as we are able to collect enough data during three months, it makes no
 sense to extend the optimization horizon to a time that is longer than this.
 The choice of the number of arms is an hyper-parameter that the corporate should input, by setting the minimum budget to allocate to each subcampaign ($min-budget$), the maximum one ($max-budgets$) and the granularity ($step$).
-\\For this experiment, we set the same minimum budget for all subcampaign (equal to \texteuro1000) but different upper bound as we consider the company to have (very low) prior information about their classes on user. The upper bound for the budget was then set to \texteuro5400, \texteuro5800 and \texteuro5200 for the three categories of users, reflecting the fact that the company can afford to spend more for his top spending users.
-As a luxury brand, the company decided to have a high granularity in the budget allocation, to exploit at best all the advantages of the CMAB approach in finding the best allocation.
-\\Indeed, the company could even have some prior information about users behaviour, but for sure it cannot know what is the best choice for the budget allocations as it depends upon too many factors.
+\\For this experiment, we set the same minimum budget for all subcampaign (equal to \texteuro1000) but different upper bound as we consider to have (very low) prior information about their classes of user. The upper bound for the budget was then set to \texteuro5400, \texteuro5800 and \texteuro5200 for the three categories of users, reflecting the fact that we can afford to spend more for his top spending users.
+As a luxury brand, we decided to have a high granularity in the budget allocation, to exploit at best all the advantages of the CMAB approach in finding the best allocation.
+\\Indeed, we could even have some prior information about users behaviour, but for sure we cannot a-priori know what is the best choice for the budget allocations as it depends upon too many factors.
 \\In particular, $step=2$ that means the allocation of budget has a granularity of \EUR{200}. With the same granularity but different allocation range, each GP Learner resulted in a different number of arms (respectively 22 arms for North/WithChildren, 24 arms for North/WithoutChildren and 21 arms for South/WithChildren).

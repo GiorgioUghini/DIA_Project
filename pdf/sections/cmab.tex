@@ -5,8 +5,8 @@ The pseudo code of the algoritm we implemented is as follow.
 		\STATE $J\gets ${ all classes of users}
 		\FOR {$day \in T$}
 			\FOR{$j \in \{1,...,J\}$}
-			\STATE Sample j-th GP-Learner
-			\STATE Add row to knapsack matrix
+			\STATE $s \leftarrow$ Sample j-th GP-Learner
+			\STATE Add $s$ row to knapsack matrix
 			\ENDFOR
 			\STATE Optimize knapsack matrix
 			\STATE Play selected superarm
