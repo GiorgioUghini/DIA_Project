@@ -68,7 +68,7 @@ for e in range(0, N_EXPERIMENTS):
                 p = sampled_prices[j]
                 c = clicks[i]
                 conv_rate = conversion_rates[j]
-                budgets = gpts_learners[i].arms
+                budgets = gpts_learners[i].arms * 1000
                 values_per_click.append((p * c * conv_rate - budgets) / c)
 
             # now we can solve the knapsack problem to find best allocation and expected revenue
@@ -106,7 +106,7 @@ for e in range(0, N_EXPERIMENTS):
             real_clicks_list.append(real_clicks)
             real_buys = env.round_pricing(best_price_arm, real_clicks, i)
             real_buys_list.append(real_buys)
-            daily_revenue += real_buys * best_price
+            daily_revenue += real_buys * best_price - chosen_budgets[best_TS_learner][i]*1000
             # and update learners
             gpts_learners[i].update(best_budget_arms[i], real_clicks)
             pr_ts_learners[i].update(best_price_arm, real_buys, real_clicks - real_buys)
@@ -134,7 +134,7 @@ for price in prices:
     for userType in range(0, N_CLASSES):
         clicks = env.means[userType]
         demandCurve = demand(userType, price)
-        values_per_click = (price * clicks * demandCurve - budgets_j[userType]) / clicks
+        values_per_click = (price * clicks * demandCurve - budgets_j[userType]*1000) / clicks
         second_stage_rows.append(values_per_click * clicks)
 
     colNum = int(np.floor_divide(total_budget, step) + 1)  # that is, int(np.floor_divide(total_budget, step) + 1)
@@ -171,19 +171,18 @@ timestamp = str(datetime.now())
 aggr_optimal_revenue = np.sum(optimized_revenue)
 aggr_rewards = np.mean(per_experiment_revenues, axis=0)
 plt.figure(0)
-plt.ylabel("Regret")
-plt.xlabel("time")
+plt.ylabel("Regret [€]")
+plt.xlabel("time [days]")
 a = aggr_optimal_revenue - aggr_rewards
 c = np.cumsum(a)
 plt.plot(c, 'r')
-plt.legend(["Budget + Pricing"])
 if N_EXPERIMENTS > 10:
     plt.savefig("regret-%s.png" % timestamp)
 plt.show()
 
 plt.figure(1)
-plt.ylabel("Reward")
-plt.xlabel("time")
+plt.ylabel("Reward [€]")
+plt.xlabel("time [days]")
 a = aggr_rewards
 b = aggr_optimal_revenue * np.ones(len(aggr_rewards))
 plt.plot(a, 'b')

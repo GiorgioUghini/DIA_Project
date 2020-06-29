@@ -45,19 +45,19 @@ Some remarks:
     \item on line 11 the update of the TS learner consists in updating the beta parameters of the arm pulled $\bar{a}$, in the following way: $(\alpha, \beta)_{\bar{a}} \pluseq (successes, failures)$
 \end{itemize}
 
-\subsubsection{Choice of the best arm}
+\subsubsection{Choice of the best arm}\label{pricing_best_arm}
 The following results come from averaging over 1000 experiments.
 
 We tested the experiment with several numbers of arms. For each number $n$ of arms, draw the $n$ prices equally spaced in the interval and run the experiment, calculate the regret and the reward and use them to choose the best number of arms.
 
-\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{../curves/results/pricing_regret.png}}
+\makebox[\textwidth][c]{\includegraphics[width=0.9\textwidth]{../curves/results/pricing_regret.png}}
 
 The first image shows the cumulative regret using different numbers of arms, ranging from 3 to 9.
 Given the limited time-span, the best result is provided by a low number of arms, which converges more rapidly to the best arm.
 
 However, since in the calculus of the regret we use a discretized clairvoyant algorithm with the same level of discretization of every experiment, we know how fast the learner converges but not how much money we would be losing in the ideal case in which we could use an infinite number of arms. For this reason, we set up another experiment in which we calculate the reward and compare it with the full clairvoyant reward that, in this case, corresponds with the reward that we would get if we chose, for each class, its actual best price without any discretization.
 
-\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{../curves/results/pricing_cumulative_reward.png}}
+\makebox[\textwidth][c]{\includegraphics[width=0.9\textwidth]{../curves/results/pricing_cumulative_reward.png}}
 As the image shows, all possible number of arms provide comparable results in terms of cumulative reward. In particular, they are ordered from best to worst cumulative reward in this way: $(6,3,8,5,7,9,4)$. The maximum difference in lost reward (4 arms vs 6 arms) is around 3\%.
 
 The fact that 6 is the best number of arms in our experiment does not imply that it is always the case, since we are only considering a single problem and it may be that its arms happened to be close to the best possible prices.

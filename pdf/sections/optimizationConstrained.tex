@@ -1,10 +1,5 @@
 In this final step, we will analyze the design of an optimization algorithm combining the allocation of budget and the pricing when the seller a priori knows that every subcampaign is associated with a different context and charges a unique price to all the classes of users.
-
-\subsubsection{Assumptions}
-\begin{enumerate}
-    \item The optimal bid is automatically set
-    \item Single phase
-\end{enumerate}
+For simplicity, we will only consider a single phase. Also, we assume that the optimal bid is automatically set
 
 \subsubsection{Setup of the experiment}
 For this experiment we will consider a time span $T=50$ days. Other variables are:
@@ -46,13 +41,15 @@ In the budget optimization problem the value per click depends on the price chos
         \STATE $vpc_{c,b}\gets${Estimate values per click}
         \ENDFOR
         \STATE $b_{best_c} \gets${Use CMAB optimizer to get best budget allocation}
-        \STATE $r_{exp_i} \gets${Use CMAB optimizer to get expected revenues}
+        \STATE $r_{exp_c} \gets${Use CMAB optimizer to get expected revenues}
         \ENDFOR
         \ENDFOR
         \STATE $r_{max} \gets \max{r_{exp_i}}$
         \STATE $(\bar{p}, \bar{b_c}) \gets${Select best price and budgets associated with best revenue}
+        \FOR {$1 \leq c \leq C$}
         \STATE $(\bar{c}, \bar{b}, \bar{r}) \gets${Test with env and get real clicks, buys and revenue}
         \STATE Update TS and GPTS learners
+        \ENDFOR
         \ENDFOR
 	\end{algorithmic}
 \end{algorithm}
@@ -63,8 +60,8 @@ In the budget optimization problem the value per click depends on the price chos
     \item To estimate the clicks given a class $c$ and a budget $b$, the c-th GPTS learner returns a sample from the normal distribution of budget $b$, in which mean and variance are learned by the GP regressor.
     \item the estimation of the values per click is obtained with the following formula: 
     \[ vpc_{c,b} = \frac{p * clicks_{c,b} * d_p - B_b}{clicks_{c,b}} \;\; \forall c \in \{1,..,C\} \; \forall b \in \{1,..,|B|\} \]
-    in which the numerator represents the net expected revenue (net revenue - budget spent), and is divided by the expected number of clicks to obtain the values per click, for each class and for each budget.
-    \item The CMAB optimizer takes as input the estimated values per clicks and number of clicks of each subcampaign and returns the best budget allocation by solving the knapsack problem.
+    in which the numerator represents the net expected revenue (tot revenue - budget spent), and is divided by the expected number of clicks to obtain the values per click, for each class and for each budget.
+    \item The CMAB optimizer takes as input the estimated values per click and the number of clicks of each subcampaign and returns the best budget allocation by solving the knapsack problem.
     \item In the final part the TS and GPTS learners are updated. In particular, the c-th GPTS takes the number of clicks that the c-th subcampaign received and uses them to update the model on its pulled arm.
     Instead, each TS learner is updated on the same arm $\bar{p}$ but with different inputs: the c-th TS learner updates its arm $\bar{p}$ with the number of buys $\bar{b_c}$ that come from the c-th subcampaign as successes, and $\bar{c_c} - \bar{b_c}$ as the number of failures
 \end{itemize}
@@ -75,6 +72,6 @@ As in the previous points, this regret refers to the best arms, and it represent
 
 
 \label{fig:opt_constrained_regret}
-\makebox[\textwidth][c]{\includegraphics[width=0.8\textwidth]{../curves/results/unique_bdgalloc_and_pricing_regret}}
+\makebox[\textwidth][c]{\includegraphics[width=0.9\textwidth]{../curves/results/unique_bdgalloc_and_pricing_regret}}
 \label{fig:opt_constrained_reward}
-\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{../curves/results/unique_bdgalloc_and_pricing_real_rew}}
+\makebox[\textwidth][c]{\includegraphics[width=0.9\textwidth]{../curves/results/unique_bdgalloc_and_pricing_real_rew}}
