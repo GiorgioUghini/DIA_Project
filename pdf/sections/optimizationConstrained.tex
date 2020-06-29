@@ -32,7 +32,6 @@ The high-level pseudo code of the algorithm is shown in Algorithm \ref{alg:opt-c
 Basically, every TS learner is responsible for finding the best price for the class of users it belongs to.
 However, since only one price can be selected, the algorithm solves the budget optimization problem for each price and chooses the one that has the greatest expected reward.
 In the budget optimization problem the value per click depends on the price chosen.
-
 \begin{algorithm}
     \caption{Budget and Pricing optimization with fixed price}
     \label{alg:opt-constrained}
@@ -57,8 +56,7 @@ In the budget optimization problem the value per click depends on the price chos
         \ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-
-Some remarks:
+\newpage Some remarks:
 \begin{itemize}
     \item All the TS learners have 6 arms. As discussed in \ref{pricing_best_arm}, this guarantees a fair reward with the given timespan. 
     \item The value $d_p$ is estimated from the TS learner, in particular it returns a sample from the beta distribution of price $p$, in the following way: $d_p = beta(\alpha_p, \beta_p)$
