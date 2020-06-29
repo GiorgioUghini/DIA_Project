@@ -8,7 +8,7 @@ reward = []
 clair = []
 number_of_arms = 6
 number_of_experiments = 1
-number_of_clicks_per_day = 1
+number_of_clicks_per_day = 17000
 number_of_days = 90
 number_of_days_for_splitting = 7
 probabilities_of_users = [u.getProbabilities(0), u.getProbabilities(1), u.getProbabilities(2)]
@@ -36,7 +36,7 @@ plt.figure(0)
 plt.plot(np.cumsum(np.mean(regret, axis=0)))
 plt.legend(["6 arms - TS"])
 plt.xlabel("number of days")
-plt.ylabel("cumulative regret [€ per click]")
+plt.ylabel("cumulative regret")
 plt.xticks(np.linspace(0, number_of_clicks_per_day*number_of_days, 8), np.linspace(0, number_of_days, 8, dtype=np.int32))
 plt.show()
 plt.figure(1)
@@ -44,6 +44,6 @@ plt.plot(u.smooth(np.mean(reward, axis=0), 800))
 plt.plot(u.smooth(np.mean(clair, axis=0), 800))
 plt.legend(["reward", "clairvoyant"])
 plt.xlabel("number of days")
-plt.ylabel("reward [€ per click]")
+plt.ylabel("reward")
 plt.xticks(np.linspace(0, number_of_clicks_per_day*number_of_days, 8), np.linspace(0, number_of_days, 8, dtype=np.int32))
 plt.show()
