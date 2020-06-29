@@ -1,0 +1,29 @@
+\begin{algorithm}
+	\renewcommand{\algorithmiccomment}[2][.4\linewidth]{%
+		\leavevmode\hfill\makebox[#1][l]{//~#2}}
+	\caption{Optimization Algorithm}
+	\begin{algorithmic}[1]
+		\STATE $J\gets ${ all classes of users}
+		\FOR{$day \in T$}
+		\FOR{$j \in \{1,...,J\}$}
+		\STATE $p \leftarrow \text{Sample(j-th TS)}$
+		\COMMENT{Price}
+		\STATE $a \leftarrow$ Get predicted conversion-rate given the pulled arm
+		\STATE $c \leftarrow \text{Sample(j-th GPTS)}$
+		\COMMENT{Number of clicks}
+		\STATE $b \leftarrow \text{Budget(j-th GPTS)}$
+		\COMMENT{Budget spent}
+		\STATE $v \leftarrow \dfrac{p\cdot a\cdot c - b}{c}$
+		\COMMENT{Value per click}
+		\STATE Add row $v\cdot c$ to knapsack matrix
+		\ENDFOR
+		\STATE $a \leftarrow$ Optimize knapsack matrix
+		\STATE $rew \leftarrow $ Play selected superarm $a$
+		\STATE Update GPTS-Learners model
+		\STATE Update TS-Learners model
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+The pseudo code of the algoritm we implemented is as above, where the GPTS-Learners are those incharged of the budget problem and the TS-Learners are incharged of the pricing.
+
+During the model update, an important consideration should also be taken into consideration: as problem can be decomposed, the optimal solution is the union of the three optimal rewards sub-solution (remember that the seller can set a different price for each class of user).
