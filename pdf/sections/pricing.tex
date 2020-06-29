@@ -1,23 +1,18 @@
 \newcommand{\pluseq}{\mathrel{+}=}
 
 In this section, we describe the learning algorithm that we used to maximize the number of purchases made by users that have reached our website by clicking on ads.
-
-\subsubsection{Assumptions}
-\begin{enumerate}
-    \item There is only one phase
-    \item The allocation of the budget over the three subcampaigns is fixed
-\end{enumerate}
+For simplicity, we will only consider 1 phase and that the allocation of the budget over the three subcampaigns is fixed 
 
 \subsubsection{Setup of the experiment}
 Three Thompson Sampling learners are used, one for each class of users. Since the users arrive on the purchase page by clicking on the ads, we assume that we can differentiate them by their class, thus proposing a different price to each user.
 
-To satisfy assumption (1), the algorithm runs for a limited number of days, 45, enough to provide a significant result.
+Since we are only considering a single phase, the algorithm runs for a limited number of days, 50, enough to provide a significative result.
 
 The average number of users that arrive per day are taken from the results of the previous point, which optimizes the budget in the fourth phase and maximizes the number of clicks. It returns the following average number of daily clicks: $C=[1800, 12000, 350]$. For this experiment, we will use these values as the daily average number of clicks, with a variance that is proportional to each value: $Var_i = C_i / 4$ $\forall{i} \in \{1,2,3\}$.
 
 Since the optimization of the budget is made once a day and depends on the price chosen, also the price (for each class of users) is chosen once per day.
 
-The minimum and maximum prices (0, 400) are the same for all the classes of users. The same goes for the number of arms, for which we tested various configurations ranging from 4 to 10 arms to see which one provided the best result.
+The minimum and maximum prices (100, 400) are the same for all the classes of users. The same goes for the number of arms, for which we tested various configurations ranging from 3 to 9 arms to see which one provided the best result.
 
 \subsubsection{The algorithm}
 The high-level pseudo code of the algorithm is shown in Algorithm \ref{alg:ts_pricing}.
@@ -38,7 +33,7 @@ Each TS learner is responsible for a class of users. Each day, the 3 learners pu
         \STATE $failures\gets ${clicks[j][day] - successes}
         \STATE $reward\gets ${successes * price}
         \STATE regret += optimum - reward
-        \STATE TS[j].update(pulledArm, successes, failures)
+        \STATE TS[j].update(price, successes, failures)
         \ENDFOR
         \ENDFOR
 	\end{algorithmic}
@@ -55,15 +50,15 @@ The following results come from averaging over 1000 experiments.
 
 We tested the experiment with several numbers of arms. For each number $n$ of arms, draw the $n$ prices equally spaced in the interval and run the experiment, calculate the regret and the reward and use them to choose the best number of arms.
 
-\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{sections/images/pricing_regret.png}}
+\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{../curves/results/pricing_regret.png}}
 
-The first image shows the cumulative regret using different numbers of arms, ranging from 3 to 7.
+The first image shows the cumulative regret using different numbers of arms, ranging from 3 to 9.
 Given the limited time-span, the best result is provided by a low number of arms, which converges more rapidly to the best arm.
 
 However, since in the calculus of the regret we use a discretized clairvoyant algorithm with the same level of discretization of every experiment, we know how fast the learner converges but not how much money we would be losing in the ideal case in which we could use an infinite number of arms. For this reason, we set up another experiment in which we calculate the reward and compare it with the full clairvoyant reward that, in this case, corresponds with the reward that we would get if we chose, for each class, its actual best price without any discretization.
 
-\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{sections/images/pricing_cumulative_reward.png}}
-As the image shows, using 3 arms does not offer a good reward. The best number of arms that comes out from our experiment is 4, which is aligned with the theoretical expection that we have with a period of 45 days.
+\makebox[\textwidth][c]{\includegraphics[width=0.85\textwidth]{../curves/results/pricing_cumulative_reward.png}}
+As the image shows, all possible number of arms provide comparable results in terms of cumulative reward. In particular, they are ordered from best to worst cumulative reward in this way: $(6,3,8,5,7,9,4)$. The maximum difference in lost reward (4 arms vs 6 arms) is around 3\%.
 
-With 4 arms, we have a reasonably fast convergence to the best arm and enough arms to pull a price that is close enough to the clairvoyant to obtain a good reward.
-We can see, however, that the actual reward does not differ much using 4, 5, 6 or 7 arms. For a real application with a timespan that is similar to this one, all of these numbers would be a valid choice.
+The fact that 6 is the best number of arms in our experiment does not imply that it is always the case, since we are only considering a single problem and it may be that its arms happened to be close to the best possible prices.
+However, increasing the number of arms also increases the possibility that an arm is close to the actual best price.

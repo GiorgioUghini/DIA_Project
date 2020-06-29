@@ -7,7 +7,7 @@ import utils
 # avg number of clicks per day, taken from the best budget allocation of the previous point
 B = np.array([1800, 12000, 350])
 var = B / 4  # variance in number of clicks per day
-T = 45  # number of days
+T = 50  # number of days
 multi_arms = True
 N_CLASSES = 3
 CLASSES = range(N_CLASSES)
@@ -22,20 +22,23 @@ print("Optimal number of arms: %d" % best_n_arms)
 
 n_experiments = 1000
 MIN_N_ARMS = 3
-MAX_N_ARMS = 9
+MAX_N_ARMS = 10
+MIN_PRICE = 100
+MAX_PRICE = 400
 n_arms_arr = list(range(MIN_N_ARMS, MAX_N_ARMS)) if multi_arms else [best_n_arms]
 
 max_regret_per_arm = []
 
-x = np.arange(0, 400, 1)
-real_best_prices = [np.argmax(demand[c](x) * x) for c in CLASSES]
+x = np.arange(MIN_PRICE, MAX_PRICE, 1)
+real_best_prices = np.array([np.argmax(demand[c](x) * x) for c in CLASSES]) + MIN_PRICE
+print("Theoretical best prices: %s" % str(real_best_prices))
 real_optimum = [demand[c](real_best_prices[c]) * real_best_prices[c] * clicks[c] for c in CLASSES]
 
 ts_regret_per_arm = []
 ts_reward_per_arm = []
 for n_arms in n_arms_arr:
     print(n_arms, "arms")
-    ts_env = [Environment(n_arms=n_arms, demandCurve=demand[c], minPrice=0, maxPrice=400) for c in CLASSES]
+    ts_env = [Environment(n_arms=n_arms, demandCurve=demand[c], minPrice=MIN_PRICE, maxPrice=MAX_PRICE) for c in CLASSES]
     prices = [t.probabilities[:, 0] for t in ts_env]
     best_arms = [np.argmax(demand[c](prices[c]) * prices[c]) for c in CLASSES]
     best_prices = [prices[c][best_arms[c]] for c in CLASSES]
@@ -80,13 +83,13 @@ for n_arms in n_arms_arr:
 tmp = np.argsort(max_regret_per_arm) + MIN_N_ARMS
 print("regrets per arm: %s" % str(np.sort(max_regret_per_arm)))
 print("Sorted arms: %s" % str(tmp))
-print("With %d arms we have the smallest regret: %d" % (3 + np.argmin(max_regret_per_arm), int(np.min(max_regret_per_arm))))
+print("With %d arms we have the smallest regret: %d" % (MIN_N_ARMS + np.argmin(max_regret_per_arm), int(np.min(max_regret_per_arm))))
 
 plt.figure(0)
 for n in range(len(n_arms_arr)):
     plt.plot(ts_regret_per_arm[n])
 plt.legend(n_arms_arr)
-plt.xlabel("T")
+plt.xlabel("T [days]")
 plt.ylabel("Regret[€], TS")
 plt.show()
 
@@ -108,8 +111,8 @@ for n in range(len(n_arms_arr)):
     cumulative_rewards.append(c[len(c)-1])
     plt.plot(c)
 plt.legend(legend)
-plt.xlabel("T")
-plt.ylabel("Cumulative Reward[€], TS")
+plt.xlabel("T [days]")
+plt.ylabel("Cumulative Reward[€]")
 plt.show()
 
 print("Cumulative rewards: %s" % str(cumulative_rewards))
