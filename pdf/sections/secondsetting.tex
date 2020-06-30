@@ -20,5 +20,5 @@ We supposed that the compay could have a small prior information about the distr
 \\As the phases are uniformly distributed and we know the number of it and the optimization horizon, we implemented the second formula for the Sliding Window lenght that resulted in:
 $$SW = \dfrac{365}{4*3} = 1 \text{ month}$$
 This is a reasonable amount of time as, provided the existance of 4 phases in a year, each phase would last 3 months and using this $SW$ time we're sure that, after a month, a new phase has begun and no more dirty data are considered.
-In addition, the parameters set by the company are as follows:
+In addition, the parameters that we set are as follows:
 $budgets_{min} = [10, 10, 10]$, $budgets_{max} = [70, 80, 60]$, $step = 2$ and $budget_{tot} = 110$.
