@@ -15,5 +15,5 @@
 #### Phases
 - JAN-FEB-MAR: High interest, No competitor
 - APR-MAY-JUN: Low interest, No competitor
-- JUL-AUG-SEP: Low interest, Si inserisce un competitor per la prossima fase
-- OCT-NOV-DEC: High interest, Con competitor
+- JUL-AUG-SEP: Low interest, A new competitors join the market
+- OCT-NOV-DEC: High interest, Competitor is present
