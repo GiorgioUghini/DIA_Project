@@ -1,19 +1,19 @@
-# Progetto DIA
-## Prodotto
-Sciarpa stile Louis Vuitton ~ 200€
+# Data Intelligence Application - Course Project
+- Advertised product: Louis Vuitton Scarf ~ 200€
+- Project Description and Report: [PDF Here](https://drive.google.com/file/d/1k3KaEB6CXg3loAFOOYJqt6_hIV8RDWF1/view?usp=sharing)
+- Project presentation: [Slides Here](https://drive.google.com/file/d/1NNkX252SFWJlPAbN-gFEuxybXqeKB_1U/view?usp=sharing) 
+ 
+--- 
 
-## Gruppi di persone
-1) Donna del nord Italia con reddito nucleo familiare > 80.000€ con figli
-2) Donna del nord Italia con reddito nucleo familiare > 80.000€ senza figli
-3) Donna del sud Italia con reddito nucleo familiare > 80.000€ con figli
+### Analized aspects
 
-## Ad per gruppo di persone
-1) Sulla qualità del prodotto
-2) Puntare sul posizionamento sociale che ti dà e sul brand
-3) Appariscenza, particolarità e unicità del prodotto
+#### Target
+1) Northen Italy Woman with familiar earnings > 80.000€, with childrens
+2) Northen Italy Woman with familiar earnings > 80.000€, without childrens
+3) Southern Italy Woman with familiar earnings > 80.000€, with childrens
 
-## Fasi
-- GEN-FEB-MAR: Alto interesse, No competitor
-- APR-MAG-GIU: Basso interesse, No competitor
-- LUG-AGO-SET: Basso interesse, Si inserisce un competitor per la prossima fase
-- OTT-NOV-DIC: Alto interesse, Con competitor
+#### Phases
+- JAN-FEB-MAR: High interest, No competitor
+- APR-MAY-JUN: Low interest, No competitor
+- JUL-AUG-SEP: Low interest, Si inserisce un competitor per la prossima fase
+- OCT-NOV-DEC: High interest, Con competitor
